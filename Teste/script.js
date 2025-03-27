@@ -1,4 +1,5 @@
 const placeholders = [
+    "Ex.: Carlos Alberto",
     "Ex.: 1000KW",
     "Ex.: Sim",
     "Ex.: O maior excedente durante o dia é de 100KW por 2 horas.",
@@ -30,6 +31,7 @@ const placeholders = [
 
 const curiosidades = [
     "Você sabia? A You.On é pioneira em armazenamento de energia no Brasil.",
+    "Você sabia? A You.On é pioneira em armazenamento de energia no Brasil.",
     "A You.On já economizou mais de 500 toneladas de CO₂ com seus projetos.",
     "Temos soluções em mais de 8 estados brasileiros.",
     "Nossos sistemas suportam automação e monitoramento em tempo real.",
@@ -58,6 +60,7 @@ const curiosidades = [
   ];
   
   const perguntas = [
+    "Digite seu nome: ",
     "Qual é a demanda contratada da concessionária em kW (máxima potência entregue pela subestação)?",
     "A empresa nos dias atuais sofre alguma penalização da concessionária por exceder essa demanda contratada ?",
     "Caso haja essa penalização, em quantos KW se estima que seja esse excedente e por quanto tempo ? Se existirem vários excedentes durante o dia, informar o de maior demanda.",
