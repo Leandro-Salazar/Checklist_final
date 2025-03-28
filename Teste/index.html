@@ -2,53 +2,56 @@
 <html lang="pt-BR">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checklist Técnico - You.On</title>
-    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css"> <!-- Continua usando o mesmo style -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checklist Técnico - You.On</title>
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css"> <!-- Continua usando o mesmo style -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 </head>
 
 <body>
 
-    <div class="container">
-        <!-- Caixa inicial -->
-        <div class="form-box login">
-            <form action="javascript:void(0)">
-                <img src="./img/Logo Verde.png" alt="Logo">
-                <p class="title">Checklist Técnico para projetos C&I</p>
-                <button type="submit" class="btn" id="startButton">Vamos Lá!</button>
-            </form>
+  <div class="container">
+    <!-- Caixa inicial -->
+    <div class="form-box login">
+      <form action="javascript:void(0)">
+        <img src="./img/Logo Verde.png" alt="Logo">
+        <p class="title">Checklist Técnico para projetos C&I</p>
+        <button type="submit" class="btn" id="startButton">Vamos Lá!</button>
+      </form>
+    </div>
+
+    <!-- Caixa da pergunta (inicialmente escondida) -->
+    <div class="form-box question" style="display: none;">
+      <form id="formPerguntas" action="javascript:void(0)">
+        <img src="./img/Logo Verde.png" alt="Logo" class="logo-perguntas">
+
+        <h2 class="pergunta" id="perguntaTexto">Qual é a pergunta?</h2>
+
+        <p class="dica-pergunta" id="textoAjuda"></p>
+
+        <div class="input-box">
+          <input type="text" class="input-projeto" id="respostaInput" placeholder="Digite aqui">
         </div>
 
-        <!-- Caixa da pergunta (inicialmente escondida) -->
-        <div class="form-box question" style="display: none;">
-            <form id="formPerguntas" action="javascript:void(0)">
-                <img src="./img/Logo Verde.png" alt="Logo" class="logo-perguntas">
-              
-                <h2 class="pergunta" id="perguntaTexto">Qual é a pergunta?</h2>
-              
-                <p class="dica-pergunta" id="textoAjuda"></p>
-
-                <div class="input-box">
-                  <input type="text" class="input-projeto" id="respostaInput" placeholder="Digite aqui">
-                </div>
-              
-                <div class="botoes">
-                  <button type="button" class="btn" id="prevButton" style="display: none;">Anterior</button>
-                  <button type="submit" class="btn" id="nextButton">Próxima</button>
-                </div>
-              </form>
-          </div>
-        <!-- Texto lateral -->
-        <div class="toggle-box">
-            <div class="toggle-panel toggle-left" id="toggleText">
-                <h1>Pioneirismo em Armazenamento<br>de Grande Porte na América Latina</h1>        
-            </div>
-        </div>  
+        <div class="botoes">
+          <button type="button" class="btn" id="prevButton" style="display: none;">Anterior</button>
+          <button type="submit" class="btn" id="nextButton">Próxima</button>
+        </div>
+      </form>
     </div>
+    <!-- Texto lateral -->
+    <div class="toggle-box">
+      <div class="toggle-panel toggle-left" id="toggleText">
+        <h1>Pioneirismo em Armazenamento<br>de Grande Porte na América Latina</h1>
+      </div>
+    </div>
+  </div>
 
   <!-- Scripts -->
   <script src="script.js"></script>
 </body>
+
 </html>
