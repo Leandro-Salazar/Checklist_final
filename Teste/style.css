@@ -44,15 +44,16 @@ body {
   max-height:150px;
   width: auto;
   height: auto;
+  margin-top: 30px;
  
 }
 /* Caixa da pergunta */
 .form-box.question {
   flex-direction: column;
-  justify-content: center; /* <-- Alinha os itens ao topo */
+  justify-content: flex-start; /* <-- Alinha os itens ao topo */
   align-items: center;
   overflow-y: auto;
-  padding: 30px;
+  padding: 20px;
 }
 
 
@@ -282,6 +283,23 @@ form{
   color: #bcd42c
   
   
+}
+
+@keyframes fadeColorIn {
+  0% {
+    opacity: 0;
+    color: #444; /* cor inicial (ex: cinza escuro) */
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    color: #bcd42c; /* cor final (verde-limão da You.On) */
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeColorIn 1.2s ease forwards;
 }
 
 @keyframes slideOut {

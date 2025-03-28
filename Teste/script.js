@@ -149,7 +149,10 @@ function atualizarPergunta() {
   textoAjuda.textContent = placeholders[etapaAtual] || "";
   respostaInput.placeholder = "Digite aqui...";
 
+  toggleText.classList.remove("fade-in");
+  void toggleText.offsetWidth; // força o reflow para reiniciar a animação
   toggleText.innerHTML = `<h1>${curiosidades[etapaAtual] || "Obrigado por responder!"}</h1>`;
+  toggleText.classList.add("fade-in")
 
   prevButton.style.display = etapaAtual === 0 ? 'none' : 'inline-block';
   nextButton.textContent = etapaAtual === totalEtapas - 1 ? "Enviar" : "Próxima";
