@@ -1,8 +1,8 @@
 const imagensPerguntas = [
     './img/imagem-container-verde.jpg',
-    './img/imagem-container-verde.jpg',
-    './img/imagem-container-verde.jpg',
-    './img/imagem-container-verde.jpg',
+    './img/youon-home.jpg',
+    './img/container-cinza.jpg',
+    './img/youon-home2.jpg',
     './img/pergunta5.png',
     './img/pergunta6.png',
     './img/pergunta7.png',
