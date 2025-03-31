@@ -61,27 +61,53 @@ function atualizarPergunta() {
   textoAjuda.textContent = placeholders[etapaAtual] || "";
   respostaInput.placeholder = "Digite aqui...";
 
-  // Atualiza texto lateral
   toggleText.innerHTML = `<h1>${curiosidades[etapaAtual] || "Obrigado por responder!"}</h1>`;
 
-  // Atualiza botão
   prevButton.style.display = etapaAtual === 0 ? 'none' : 'inline-block';
   nextButton.textContent = etapaAtual === totalEtapas - 1 ? "Enviar" : "Próxima";
 
-  // Foco no input
   respostaInput.style.display = 'block';
   nextButton.style.display = 'inline-block';
   setTimeout(() => {
     respostaInput.focus();
   }, 50);
+
+  // Transição fluida de imagem com overlay ::after
   const painelLateral = document.querySelector('.toggle-panel.toggle-left');
   const novaImagem = imagensPerguntas[etapaAtual];
-  
+
+  // Cria ou atualiza a <style> dinâmica
+  const styleTag = document.getElementById('dynamic-bg-style') || (() => {
+    const style = document.createElement('style');
+    style.id = 'dynamic-bg-style';
+    document.head.appendChild(style);
+    return style;
+  })();
+
+  // Define a nova imagem no ::after
+  styleTag.innerHTML = `
+    .toggle-panel.toggle-left::after {
+      background-image:
+        linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+        url('${novaImagem}');
+    }
+  `;
+
+painelLateral.classList.add('show-new-bg');
+
+setTimeout(() => {
   painelLateral.style.backgroundImage = `
     linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
     url('${novaImagem}')
   `;
+}, 800); 
+setTimeout(() => {
+  painelLateral.classList.remove('show-new-bg');
+}, 1600);
+  
 }
+
+
   async function finalizarFormulario() {
   respostas[etapaAtual] = respostaInput.value.trim();
  

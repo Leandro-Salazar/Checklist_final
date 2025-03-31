@@ -220,7 +220,7 @@ form{
   left: -250%;
   width: 300%;
   height: 100%;
-  background: #312B36;
+  
   border-radius: 150px;
   z-index: 2;
   transition: 1.8s ease-in-out;
@@ -248,8 +248,28 @@ form{
   display: flex;
   justify-content: center;
   align-items: center;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: none; /* Remove qualquer flicker */
 }
 
+.toggle-panel.toggle-left::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 1; /* abaixo do texto */
+  pointer-events: none;
+}
+
+.toggle-panel.toggle-left.show-new-bg::after {
+  opacity: 1;
+}
 .decorativa {
   position: absolute;
   top: 0;
@@ -310,8 +330,16 @@ form{
   padding: 20px;
   text-align: center;
   color: #bcd42c
-  
-  
+}
+
+.pergunta-container.fade-out {
+  opacity: 0;
+  transition: opacity 0.10s ease;
+}
+
+.pergunta-container.fade-in {
+  opacity: 1;
+  transition: opacity 0.4s ease;
 }
 
 .fade-out {
