@@ -12,7 +12,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: linear-gradient(90deg, #e2e2e2, #b7ee9e);
+    background: linear-gradient(90deg, #e2e2e2, #b6b7b6);
 }
 
 .container {
@@ -72,6 +72,15 @@ body {
   gap: 10px;
   width: 100%;  
 }
+
+.btn:hover{
+  background-color: #bed22f;
+  font-size: 20px;
+  transition: .3s ease-in-out;  
+  color: #000;
+}
+
+
 .dica-pergunta {
   font-size: 14px;
   color: #666;
