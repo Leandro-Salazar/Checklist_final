@@ -71,6 +71,11 @@ body {
   justify-content: space-between;
   gap: 10px;
   width: 100%;  
+  
+}
+
+.btn{
+  transition: .3s ease-in-out;
 }
 
 .btn:hover{
