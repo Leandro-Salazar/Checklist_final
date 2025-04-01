@@ -74,7 +74,10 @@ function atualizarPergunta() {
 
   // Transição fluida de imagem com overlay ::after
   const painelLateral = document.querySelector('.toggle-panel.toggle-left');
-  const novaImagem = imagensPerguntas[etapaAtual];
+  const indiceImagem = etapaAtual % imagensPerguntas.length;
+  const novaImagem = imagensPerguntas[indiceImagem];
+
+  
 
   // Cria ou atualiza a <style> dinâmica
   const styleTag = document.getElementById('dynamic-bg-style') || (() => {
@@ -106,7 +109,6 @@ setTimeout(() => {
 }, 1600);
   
 }
-
 
   async function finalizarFormulario() {
   respostas[etapaAtual] = respostaInput.value.trim();

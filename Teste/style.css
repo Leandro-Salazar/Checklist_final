@@ -60,8 +60,8 @@ body {
 /* Texto da pergunta */
 .pergunta {
   width: 100%;
-  font-size: 22px;
-  text-align: left;
+  font-size: 20px;
+  text-align: justify;
   margin-top: 15px; 
   color: #333;
 }
