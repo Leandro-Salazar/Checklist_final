@@ -1,13 +1,11 @@
-
- 
 let etapaAtual = 0;
 const totalEtapas = perguntas.length;
 const respostas = [];
- 
+
 // Configurações do Monday.com
-const MONDAY_API_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJ0aWQiOjQ5MjIxMzY5MCwiYWFpIjoxMSwidWlkIjo3Mzg3MDM0MSwiaWFkIjoiMjAyNS0wMy0yOFQxMToyOTowMS4yODVaIiwicGVyIjoibWU6d3JpdGUiLCJhY3RpZCI6Mjg2OTUyNjYsInJnbiI6InVzZTEifQ.MaWoehZB1adED02JlS9HHak3yZFie9ChPD9V6ZLTKjQ";
-const MONDAY_BOARD_ID = 8804798077;
- 
+const MONDAY_API_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJ0aWQiOjQ5MjM2MDA1MCwiYWFpIjoxMSwidWlkIjo3MzQ1MjY3MiwiaWFkIjoiMjAyNS0wMy0yOFQxNTozNzozOS4wMDBaIiwicGVyIjoibWU6d3JpdGUiLCJhY3RpZCI6MTgzNzg0NDMsInJnbiI6InVzZTEifQ.2qLzYivYuqpDvc8554M8TVYt-tAZl4LMzhuX6il8au4";
+const MONDAY_BOARD_ID = 8821870387;
+
 // Elementos do DOM
 const startButton = document.getElementById('startButton');
 const loginBox = document.querySelector('.form-box.login');
@@ -17,24 +15,24 @@ const perguntaTexto = document.getElementById("perguntaTexto");
 const respostaInput = document.getElementById("respostaInput");
 const nextButton = document.getElementById("nextButton");
 const prevButton = document.getElementById("prevButton");
- 
+
 // Ao clicar em "Vamos Lá!"
 startButton.addEventListener('click', () => {
   loginBox.style.display = 'none';
   questionBox.style.display = 'flex';
   atualizarPergunta();
   prevButton.style.display = 'none';
- 
+
   setTimeout(() => {
     respostaInput.focus();
   }, 100);
 });
- 
+
 // Ao clicar em "Próxima"
 nextButton.addEventListener("click", () => {
   respostas[etapaAtual] = respostaInput.value.trim();
   etapaAtual++;
- 
+
   if (etapaAtual < totalEtapas - 1) {
     atualizarPergunta();
   } else if (etapaAtual === totalEtapas - 1) {
@@ -44,7 +42,7 @@ nextButton.addEventListener("click", () => {
     finalizarFormulario();
   }
 });
- 
+
 // Ao clicar em "Anterior"
 prevButton.addEventListener("click", () => {
   if (etapaAtual > 0) {
@@ -52,7 +50,7 @@ prevButton.addEventListener("click", () => {
     atualizarPergunta();
   }
 });
- 
+
 // Atualiza a pergunta e curiosidade
 function atualizarPergunta() {
   perguntaTexto.textContent = perguntas[etapaAtual];
@@ -110,48 +108,97 @@ setTimeout(() => {
   
 }
 
-  async function finalizarFormulario() {
+async function gerarPDF(respostas) {
+  const { jsPDF } = window.jspdf;  // Desestruturando a biblioteca jsPDF
+  const doc = new jsPDF();
+
+  // Adicionando título ao PDF
+  doc.setFontSize(16);
+  doc.text("Formulário - Respostas", 20, 20);
+
+  // Adicionando as perguntas e respostas
+  let yPosition = 30;  // Posição Y inicial
+  perguntas.forEach((pergunta, index) => {
+    const resposta = respostas[index] || "Não informado";
+    doc.setFontSize(12);
+    doc.text(`${pergunta}: ${resposta}`, 20, yPosition);
+    yPosition += 10; // Espaçamento entre as perguntas
+  });
+
+  // Gerar o arquivo PDF
+  const pdfBase64 = doc.output('datauristring');
+  return pdfBase64;
+}
+
+async function enviarPDFParaColuna(pdfFile, itemId, colunaId) {
+  const formData = new FormData();
+  formData.append('file', pdfFile);  // Adiciona o arquivo PDF gerado
+  formData.append('item_id', itemId); // Adiciona o ID do item no Monday
+  formData.append('column_id', colunaId); // Adiciona o ID da coluna de arquivos
+
+  try {
+    const response = await fetch('https://api.monday.com/v2/files', {
+      method: 'POST',
+      headers: {
+        'Authorization': MONDAY_API_TOKEN
+      },
+      body: formData
+    });
+
+    const result = await response.json();
+    if (result.data?.add_file_to_column?.id) {
+      console.log("Arquivo PDF enviado com sucesso para a coluna!");
+    } else {
+      throw new Error('Erro ao enviar o arquivo PDF para a coluna');
+    }
+  } catch (error) {
+    console.error("Erro ao enviar o arquivo PDF para a coluna:", error);
+  }
+}
+
+async function finalizarFormulario() {
   respostas[etapaAtual] = respostaInput.value.trim();
- 
+
   try {
     const form = document.getElementById("formPerguntas");
     form.innerHTML = `
-    <div class="finalizacao">
-      <h2>Enviando para nossa plataforma...</h2>
-      <p>Aguarde enquanto salvamos suas respostas.</p>
-    </div>`;
- 
+      <div class="finalizacao">
+        <h2>Enviando para nossa plataforma...</h2>
+        <p>Aguarde enquanto salvamos suas respostas.</p>
+      </div>`;
+
     // 1. Primeiro construímos o objeto com todas as respostas
     const columnValues = {
-      text_mkpfpsxv: respostas[0] || "Não informado",
-      text_mkpfjtrm: respostas[1] || "Não informado",
-      text_mkpf5mqb: respostas[2] || "Não informado",
-      text_mkpf3ekf: respostas[3] || "Não informado",
-      text_mkpfsqdz: respostas[4] || "Não informado",
-      text_mkpfjzyb: respostas[5] || "Não informado",
-      text_mkpfk1pt: respostas[6] || "Não informado",
-      text_mkpf3epb: respostas[7] || "Não informado",
-      text_mkpfd1dz: respostas[8] || "Não informado",
-      text_mkpfftt: respostas[9] || "Não informado",
-      text_mkpf601k: respostas[10] || "Não informado",
-      text_mkpf6sng: respostas[11] || "Não informado",
-      text_mkpf8e37: respostas[12] || "Não informado",
-      text_mkpfe85s: respostas[13] || "Não informado",
-      text_mkpfpaen: respostas[14] || "Não informado",
-      text_mkpfkve5: respostas[15] || "Não informado",
-      text_mkpfntst: respostas[16] || "Não informado",
-      text_mkpfw19b: respostas[17] || "Não informado",
-      text_mkpfczdz: respostas[18] || "Não informado",
-      text_mkpf4ck7: respostas[19] || "Não informado",
-      text_mkpf2v5t: respostas[20] || "Não informado",
-      text_mkpfpx5v: respostas[21] || "Não informado",
-      text_mkpfbx0b: respostas[22] || "Não informado",
-      text_mkpfzspc: respostas[23] || "Não informado",
-      text_mkpfgctg: respostas[24] || "Não informado",
-      text_mkpf7abc: respostas[25] || "Não informado"
+      text_mkpjsmpc: respostas[0] || "Não informado",
+      text_mkpj3d37: respostas[1] || "Não informado",
+      text_mkpjsfrs: respostas[2] || "Não informado",
+      text_mkpjybzm: respostas[3] || "Não informado",
+      text_mkpj97jw: respostas[4] || "Não informado",
+      text_mkpj4ffz: respostas[5] || "Não informado",
+      text_mkpjab1d: respostas[6] || "Não informado",
+      text_mkpj3h7a: respostas[7] || "Não informado",
+      text_mkpjvnnq: respostas[8] || "Não informado",
+      text_mkpjyxr7: respostas[9] || "Não informado",
+      text_mkpjfymr: respostas[10] || "Não informado",
+      text_mkpjycdk: respostas[11] || "Não informado",
+      text_mkpjmap: respostas[12] || "Não informado",
+      text_mkpjr0bc: respostas[13] || "Não informado",
+      text_mkpj1prj: respostas[14] || "Não informado",
+      text_mkpj3yza: respostas[15] || "Não informado",
+      text_mkpjkg81: respostas[16] || "Não informado",
+      text_mkpjrrx1: respostas[17] || "Não informado",
+      text_mkpjswmv: respostas[18] || "Não informado",
+      text_mkpj9c1b: respostas[19] || "Não informado",
+      text_mkpjzpdx: respostas[20] || "Não informado",
+      text_mkpj4ay: respostas[21] || "Não informado",
+      text_mkpj98d6: respostas[22] || "Não informado",
+      text_mkpjwtgj: respostas[23] || "Não informado",
+      text_mkpjj31v: respostas[24] || "Não informado",
+      text_mkpjn1jp: respostas[25] || "Não informado",
+      text_mkpj6st5: respostas[26] || "Não informado",
     };
-    
-    // 2. Depois criamos a mutation com os valores formatados corretamente
+
+    // 2. Criar a mutação para criar o item no Monday.com
     const mutation = {
       query: `mutation {
         create_item(
@@ -161,10 +208,8 @@ setTimeout(() => {
         ) { id }
       }`
     };
- 
-    console.log("Dados sendo enviados:", mutation); // Para debug
- 
-    // 3. Finalmente fazemos o fetch com os dados preparados
+
+    // 3. Enviar a mutação para criar o item
     const response = await fetch("https://api.monday.com/v2", {
       method: "POST",
       headers: {
@@ -173,29 +218,45 @@ setTimeout(() => {
       },
       body: JSON.stringify(mutation)
     });
- 
+
     const result = await response.json();
-    console.log("Resposta da API:", result); // Para debug
-   
     if (result.data?.create_item?.id) {
+      // Gerar o PDF
+      const pdfBase64 = await gerarPDF(respostas);
+
+      // Converte o base64 para um Blob para envio
+      const pdfBlob = await fetch(pdfBase64).then(res => res.blob());
+      const pdfFile = new File([pdfBlob], "respostas_checklist.pdf", { type: "application/pdf" });
+
+      // ID do item criado
+      const itemId = result.data.create_item.id;
+
+      // ID da coluna de arquivo
+      const colunaId = "file_mkpjwzm"; // Coluna de arquivos no Monday
+
+      // Enviar o PDF para a coluna de arquivo
+      await enviarPDFParaColuna(pdfFile, itemId, colunaId);
+
       form.innerHTML = `
-      <div class="finalizacao">
-        <h2>Checklist enviado!</h2>
-        <p>Seu formulário foi registrado em nossa plataforma.<br>
-        ID: ${result.data.create_item.id}<br>
-        Redirecionando em 5 segundos...</p>
-      </div>`;
+        <div class="finalizacao">
+          <h2>Checklist enviado!</h2>
+          <p>Seu formulário foi registrado em nossa plataforma.
+
+          ID: ${result.data.create_item.id}
+
+          Redirecionando em 5 segundos...</p>
+        </div>`;
     } else {
-      throw new Error(result.errors?.[0]?.message || 'Erro desconhecido ao enviar para Monday');
+      throw new Error('Erro desconhecido ao enviar para Monday');
     }
   } catch (error) {
     const form = document.getElementById("formPerguntas");
     form.innerHTML = `
-    <div class="finalizacao">
-      <h2>Erro ao enviar</h2>
-      <p>${error.message}</p>
-      <button onclick="window.location.reload()" class="btn">Tentar novamente</button>
-    </div>`;
+      <div class="finalizacao">
+        <h2>Erro ao enviar</h2>
+        <p>${error.message}</p>
+        <button onclick="window.location.reload()" class="btn">Tentar novamente</button>
+      </div>`;
     console.error("Erro detalhado:", error);
   } finally {
     setTimeout(() => {
