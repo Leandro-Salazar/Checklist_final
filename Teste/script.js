@@ -177,7 +177,7 @@ async function finalizarFormulario() {
     const response = await fetch("https://api.monday.com/v2", {
       method: "POST",
       headers: {
-        Authorization: process.env.MONDAY_API_TOKEN,
+        Authorization: MONDAY_API_TOKEN,
         "Content-Type": "application/json"
       },
       body: JSON.stringify(mutation)
