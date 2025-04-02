@@ -1,5 +1,3 @@
-
-
 let etapaAtual = 0;
 const totalEtapas = perguntas.length;
 const respostas = [];
@@ -53,7 +51,6 @@ prevButton.addEventListener("click", () => {
   }
 });
 
-// Atualiza a pergunta e curiosidade
 function atualizarPergunta() {
   perguntaTexto.textContent = perguntas[etapaAtual];
   respostaInput.value = respostas[etapaAtual] || "";
@@ -72,14 +69,10 @@ function atualizarPergunta() {
     respostaInput.focus();
   }, 50);
 
-  // Transição fluida de imagem com overlay ::after
   const painelLateral = document.querySelector('.toggle-panel.toggle-left');
   const indiceImagem = etapaAtual % imagensPerguntas.length;
   const novaImagem = imagensPerguntas[indiceImagem];
 
-  
-
-  // Cria ou atualiza a <style> dinâmica
   const styleTag = document.getElementById('dynamic-bg-style') || (() => {
     const style = document.createElement('style');
     style.id = 'dynamic-bg-style';
@@ -87,7 +80,6 @@ function atualizarPergunta() {
     return style;
   })();
 
-  // Define a nova imagem no ::after
   styleTag.innerHTML = `
     .toggle-panel.toggle-left::after {
       background-image:
@@ -96,20 +88,21 @@ function atualizarPergunta() {
     }
   `;
 
-painelLateral.classList.add('show-new-bg');
+  painelLateral.classList.add('show-new-bg');
 
-setTimeout(() => {
-  painelLateral.style.backgroundImage = `
-    linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
-    url('${novaImagem}')
-  `;
-}, 800); 
-setTimeout(() => {
-  painelLateral.classList.remove('show-new-bg');
-}, 1600);
-  
+  setTimeout(() => {
+    painelLateral.style.backgroundImage = `
+      linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+      url('${novaImagem}')
+    `;
+  }, 800);
+
+  setTimeout(() => {
+    painelLateral.classList.remove('show-new-bg');
+  }, 1600);
 }
 
+// GERA E ENVIA PDF
 async function gerarEPDF(itemId, respostas, perguntas, mondayToken, columnId = "file_mkpjwzm") {
   try {
     const doc = new window.jspdf.jsPDF();
@@ -139,7 +132,6 @@ async function gerarEPDF(itemId, respostas, perguntas, mondayToken, columnId = "
     const pdfBlob = doc.output("blob");
     const pdfFile = new File([pdfBlob], "Checklist_Tecnico_YouOn.pdf", { type: "application/pdf" });
 
-    // Enviar para a rota local que faz o upload pra Monday
     const formData = new FormData();
     formData.append("file", pdfFile);
     formData.append("itemId", itemId);
@@ -149,20 +141,24 @@ async function gerarEPDF(itemId, respostas, perguntas, mondayToken, columnId = "
       method: "POST",
       body: formData,
     });
-    
-    const result = await res.json();
 
-    if (!result?.data?.add_file_to_column?.id) {
-      throw new Error("Erro ao anexar o PDF via backend (Vercel).");
+    const text = await res.text();
+
+    try {
+      const result = JSON.parse(text);
+      if (!result?.data?.add_file_to_column?.id) {
+        throw new Error("Erro ao anexar o PDF via backend (Vercel).");
+      }
+      console.log("✅ PDF enviado com sucesso pela rota /api/upload-pdf");
+    } catch (err) {
+      throw new Error("Erro ao interpretar resposta do backend: " + text);
     }
-
-    console.log("✅ PDF enviado com sucesso pela rota /api/upload-pdf");
   } catch (err) {
     console.error("❌ Erro ao gerar/enviar PDF via rota backend:", err);
   }
 }
 
-
+// FINALIZA FORMULÁRIO
 async function finalizarFormulario() {
   respostas[etapaAtual] = respostaInput.value.trim();
 
@@ -174,7 +170,6 @@ async function finalizarFormulario() {
         <p>Aguarde enquanto salvamos suas respostas.</p>
       </div>`;
 
-    // 1. Primeiro construímos o objeto com todas as respostas
     const columnValues = {
       text_mkpjsmpc: respostas[0] || "Não informado",
       text_mkpj3d37: respostas[1] || "Não informado",
@@ -205,7 +200,6 @@ async function finalizarFormulario() {
       text_mkpj6st5: respostas[26] || "Não informado",
     };
 
-    // 2. Criar a mutação para criar o item no Monday.com
     const mutation = {
       query: `mutation {
         create_item(
@@ -216,7 +210,6 @@ async function finalizarFormulario() {
       }`
     };
 
-    // 3. Enviar a mutação para criar o item
     const response = await fetch("https://api.monday.com/v2", {
       method: "POST",
       headers: {
@@ -228,22 +221,13 @@ async function finalizarFormulario() {
 
     const result = await response.json();
     if (result.data?.create_item?.id) {
-      // ID do item criado
       const itemId = result.data.create_item.id;
-
-
-      // Enviar o PDF para a coluna de arquivo
       await gerarEPDF(itemId, respostas, perguntas, MONDAY_API_TOKEN);
-
 
       form.innerHTML = `
         <div class="finalizacao">
           <h2>Checklist enviado!</h2>
-          <p>Seu formulário foi registrado em nossa plataforma.
-
-          ID: ${result.data.create_item.id}
-
-          Redirecionando em 5 segundos...</p>
+          <p>Seu formulário foi registrado em nossa plataforma.<br>ID: ${itemId}<br>Redirecionando em 5 segundos...</p>
         </div>`;
     } else {
       throw new Error('Erro desconhecido ao enviar para Monday');

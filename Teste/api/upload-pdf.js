@@ -6,7 +6,8 @@ export const config = {
   
   import formidable from "formidable";
   import fs from "fs";
-  import fetch from "node-fetch";
+  import FormData from "form-data"; // <-- CORRETO para Node.js
+  import fetch from "node-fetch"; // Vercel permite
   
   export default async function handler(req, res) {
     if (req.method !== "POST") {
@@ -23,6 +24,7 @@ export const config = {
   
       const fileStream = fs.createReadStream(file.filepath);
       const formData = new FormData();
+  
       formData.append("query", `
         mutation ($file: File!) {
           add_file_to_column (file: $file, item_id: ${itemId}, column_id: "${columnId}") {
@@ -36,7 +38,7 @@ export const config = {
         const response = await fetch("https://api.monday.com/v2/file", {
           method: "POST",
           headers: {
-            Authorization: process.env.MONDAY_API_TOKEN,
+            Authorization: process.env.MONDAY_API_TOKEN, // Lembre de definir isso no Vercel
           },
           body: formData,
         });
