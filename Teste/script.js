@@ -4,7 +4,7 @@ const respostas = [];
 
 // Configurações do Monday.com
 const MONDAY_BOARD_ID = 8821870387;
-
+const MONDAY_API_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJ0aWQiOjQ5NDQ3NTExNiwiYWFpIjoxMSwidWlkIjo3MzQ1MjY5MCwiaWFkIjoiMjAyNS0wNC0wMlQxNDowNDozNi4wMDBaIiwicGVyIjoibWU6d3JpdGUiLCJhY3RpZCI6MTgzNzg0NDMsInJnbiI6InVzZTEifQ.fjATkhxRPqBtyZSmhSEF3WxSTNmECSVa2R2QZehXVWs"
 // Elementos do DOM
 const startButton = document.getElementById('startButton');
 const loginBox = document.querySelector('.form-box.login');

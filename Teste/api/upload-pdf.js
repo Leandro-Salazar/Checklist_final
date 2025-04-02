@@ -1,18 +1,19 @@
-// Impede o Next.js de tentar processar o corpo do form
-const MONDAY_API_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJ0aWQiOjQ5NDQ3NTExNiwiYWFpIjoxMSwidWlkIjo3MzQ1MjY5MCwiaWFkIjoiMjAyNS0wNC0wMlQxNDowNDozNi4wMDBaIiwicGVyIjoibWU6d3JpdGUiLCJhY3RpZCI6MTgzNzg0NDMsInJnbiI6InVzZTEifQ.fjATkhxRPqBtyZSmhSEF3WxSTNmECSVa2R2QZehXVWs"
+
+import dotenv from "dotenv";
+dotenv.config();
+console.log("🔐 MONDAY_API_TOKEN carregado:", process.env.MONDAY_API_TOKEN);
+import formidable from "formidable";
+import fs from "fs";
+import FormData from "form-data";
+import fetch from "node-fetch";
 
 export const config = {
-    api: {
-      bodyParser: false,
-    },
-  };
-  
-  import formidable from "formidable";
-  import fs from "fs";
-  import FormData from "form-data";
-  import fetch from "node-fetch";
-  
-  export default async function handler(req, res) {
+  api: {
+    bodyParser: false,
+  },
+};
+
+export default async function handler(req, res) {
     if (req.method !== "POST") {
       return res.status(405).send("Only POST allowed");
     }
@@ -47,7 +48,7 @@ export const config = {
         const mondayRes = await fetch("https://api.monday.com/v2/file", {
           method: "POST",
           headers: {
-            Authorization: MONDAY_API_TOKEN, // ✅ Definida no painel da Vercel
+            Authorization: process.env.MONDAY_API_TOKEN, // ✅ Definida no painel da Vercel
           },
           body: formData,
         });
