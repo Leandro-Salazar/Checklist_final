@@ -161,9 +161,10 @@ async function enviarPDFParaColuna(pdfFile, itemId, colunaId) {
     const response = await fetch('https://api.monday.com/v2/files', {
       method: 'POST',
       headers: {
-        'Authorization': MONDAY_API_TOKEN
+        'Authorization': MONDAY_API_TOKEN,
+        "Content-Type": "application/json"
       },
-      body: formData
+      body: JSON.stringify(mutation)
     });
  
     const result = await response.json();
@@ -179,7 +180,7 @@ async function enviarPDFParaColuna(pdfFile, itemId, colunaId) {
  
 async function finalizarFormulario() {
   respostas[etapaAtual] = respostaInput.value.trim();
- 
+
   try {
     const form = document.getElementById("formPerguntas");
     form.innerHTML = `
@@ -187,8 +188,7 @@ async function finalizarFormulario() {
         <h2>Enviando para nossa plataforma...</h2>
         <p>Aguarde enquanto salvamos suas respostas.</p>
       </div>`;
- 
-    // 1. Primeiro construímos o objeto com todas as respostas
+
     const columnValues = {
       text_mkpjsmpc: respostas[0] || "Não informado",
       text_mkpj3d37: respostas[1] || "Não informado",
@@ -218,8 +218,7 @@ async function finalizarFormulario() {
       text_mkpjn1jp: respostas[25] || "Não informado",
       text_mkpj6st5: respostas[26] || "Não informado",
     };
- 
-    // 2. Criar a mutação para criar o item no Monday.com
+
     const mutation = {
       query: `mutation {
         create_item(
@@ -229,35 +228,29 @@ async function finalizarFormulario() {
         ) { id }
       }`
     };
- 
-    // 3. Enviar a mutação para criar o item
+
+    // ✅ Aqui está a correção:
     const response = await fetch("https://api.monday.com/v2", {
       method: "POST",
       headers: {
-        "Authorization": process.env.MONDAY_API_TOKEN,
+        "Authorization": MONDAY_API_TOKEN,
         "Content-Type": "application/json"
       },
       body: JSON.stringify(mutation)
     });
- 
+
     const result = await response.json();
     if (result.data?.create_item?.id) {
-      // Gerar o PDF
       const pdfBase64 = await gerarPDF(respostas);
- 
-      // Converte o base64 para um Blob para envio
+
       const pdfBlob = await fetch(pdfBase64).then(res => res.blob());
       const pdfFile = new File([pdfBlob], "respostas_checklist.pdf", { type: "application/pdf" });
- 
-      // ID do item criado
+
       const itemId = result.data.create_item.id;
- 
-      // ID da coluna de arquivo
-      const colunaId = "file_mkpjwzm"; // Coluna de arquivos no Monday
- 
-      // Enviar o PDF para a coluna de arquivo
+      const colunaId = "file_mkpjwzm";
+
       await enviarPDFParaColuna(pdfFile, itemId, colunaId);
- 
+
       form.innerHTML = `
         <div class="finalizacao">
           <h2>Checklist enviado!</h2>
