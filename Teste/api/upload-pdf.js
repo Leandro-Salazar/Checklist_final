@@ -16,7 +16,7 @@ export const config = {
     if (req.method !== "POST") {
       return res.status(405).send("Only POST allowed");
     }
-  
+
     const form = new formidable.IncomingForm();
   
     form.parse(req, async (err, fields, files) => {
@@ -47,7 +47,7 @@ export const config = {
         const mondayRes = await fetch("https://api.monday.com/v2/file", {
           method: "POST",
           headers: {
-            Authorization: process.env.MONDAY_API_TOKEN, // ✅ Definida no painel da Vercel
+            Authorization: MONDAY_API_TOKEN, // ✅ Definida no painel da Vercel
           },
           body: formData,
         });
