@@ -6,8 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checklist Técnico - You.On</title>
     <link rel="icon" type="image/png" href="./img/Icone Verde.png">
-    <link rel="stylesheet" href="style.css"> 
+    <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://alcdn.msauth.net/browser/2.24.0/js/msal-browser.min.js"></script>
 </head>
 
 <body>
@@ -26,21 +27,25 @@
         <div class="form-box question" style="display: none;">
             <form id="formPerguntas" action="javascript:void(0)">
                 <img src="./img/Logo Verde.png" alt="Logo" class="logo-perguntas">
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                    <span class="progress-text" id="progressText">0%</span>
+                </div>
                 <h2 class="pergunta" id="perguntaTexto">Qual é a pergunta?</h2>
-              
+
                 <p class="dica-pergunta" id="textoAjuda"></p>
 
                 <div class="input-box">
                   <input type="text" class="input-projeto" id="respostaInput" placeholder="Digite aqui" >
                 </div>
-              
+
                 <div class="botoes">
                   <button type="button" class="btn" id="prevButton" style="display: none;">Anterior</button>
                   <button type="submit" class="btn" id="nextButton">Próxima</button>
                 </div>
               </form>
           </div>
-        
+
         <!-- Texto lateral -->
         <div class="toggle-box">
           <div class="toggle-panel toggle-left" id="toggleText">
@@ -48,13 +53,14 @@
               <h1>Pioneirismo em Armazenamento de Grande Porte na América Latina</h1>
             </div>
           </div>
-          
+
         </div>  
     </div>
 
   <!-- Scripts -->
   <script src="data.js"></script>
-  <script type="module" src="script.js"></script>
+  <script src="script.js"></script>
 
 </body>
 </html>
+ 
