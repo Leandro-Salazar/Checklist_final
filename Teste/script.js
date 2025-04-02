@@ -16,19 +16,15 @@ const respostaInput = document.getElementById("respostaInput");
 const nextButton = document.getElementById("nextButton");
 const prevButton = document.getElementById("prevButton");
 
-// Ao clicar em "Vamos Lá!"
 startButton.addEventListener('click', () => {
   loginBox.style.display = 'none';
   questionBox.style.display = 'flex';
   atualizarPergunta();
   prevButton.style.display = 'none';
 
-  setTimeout(() => {
-    respostaInput.focus();
-  }, 100);
+  setTimeout(() => respostaInput.focus(), 100);
 });
 
-// Ao clicar em "Próxima"
 nextButton.addEventListener("click", () => {
   respostas[etapaAtual] = respostaInput.value.trim();
   etapaAtual++;
@@ -43,7 +39,6 @@ nextButton.addEventListener("click", () => {
   }
 });
 
-// Ao clicar em "Anterior"
 prevButton.addEventListener("click", () => {
   if (etapaAtual > 0) {
     etapaAtual--;
@@ -59,15 +54,12 @@ function atualizarPergunta() {
   respostaInput.placeholder = "Digite aqui...";
 
   toggleText.innerHTML = `<h1>${curiosidades[etapaAtual] || "Obrigado por responder!"}</h1>`;
-
   prevButton.style.display = etapaAtual === 0 ? 'none' : 'inline-block';
   nextButton.textContent = etapaAtual === totalEtapas - 1 ? "Enviar" : "Próxima";
 
   respostaInput.style.display = 'block';
   nextButton.style.display = 'inline-block';
-  setTimeout(() => {
-    respostaInput.focus();
-  }, 50);
+  setTimeout(() => respostaInput.focus(), 50);
 
   const painelLateral = document.querySelector('.toggle-panel.toggle-left');
   const indiceImagem = etapaAtual % imagensPerguntas.length;
@@ -89,24 +81,18 @@ function atualizarPergunta() {
   `;
 
   painelLateral.classList.add('show-new-bg');
-
   setTimeout(() => {
     painelLateral.style.backgroundImage = `
       linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
-      url('${novaImagem}')
-    `;
+      url('${novaImagem}')`;
   }, 800);
 
-  setTimeout(() => {
-    painelLateral.classList.remove('show-new-bg');
-  }, 1600);
+  setTimeout(() => painelLateral.classList.remove('show-new-bg'), 1600);
 }
 
-// GERA E ENVIA PDF
 async function gerarEPDF(itemId, respostas, perguntas, mondayToken, columnId = "file_mkpjwzm") {
   try {
     const doc = new window.jspdf.jsPDF();
-
     doc.setFontSize(14);
     doc.setFont("helvetica", "bold");
     doc.text("Checklist Técnico - You.On", 10, 15);
@@ -117,12 +103,10 @@ async function gerarEPDF(itemId, respostas, perguntas, mondayToken, columnId = "
     for (let i = 0; i < respostas.length; i++) {
       const pergunta = perguntas[i] || `Pergunta ${i + 1}`;
       const resposta = respostas[i] || "Não informado";
-
       doc.text(`${i + 1}. ${pergunta}`, 10, y);
       y += 7;
       doc.text(`Resposta: ${resposta}`, 12, y);
       y += 10;
-
       if (y > 270) {
         doc.addPage();
         y = 20;
@@ -141,20 +125,26 @@ async function gerarEPDF(itemId, respostas, perguntas, mondayToken, columnId = "
       method: "POST",
       body: formData,
     });
-    
-    const text = await res.text();
-    
+
+    let responseText;
+
     try {
-      const result = JSON.parse(text);
+      responseText = await res.text();
+      const result = JSON.parse(responseText);
+
       if (!result?.data?.add_file_to_column?.id) {
-        throw new Error("Erro ao anexar o PDF via backend (Vercel).");
+        throw new Error("Erro ao anexar o PDF via backend (Vercel)." );
       }
+
       console.log("✅ PDF enviado com sucesso pela rota /api/upload-pdf");
+
     } catch (err) {
-      throw new Error("Erro ao interpretar resposta do backend: " + text);
+      console.error("❌ Erro ao gerar/enviar PDF via rota backend:", err);
+      console.error("🧾 Conteúdo da resposta:", responseText);
+      throw new Error("Erro ao interpretar resposta do backend.");
     }
   } catch (err) {
-    console.error("❌ Erro ao gerar/enviar PDF via rota backend:" + text);
+    console.error("❌ Erro no processo de envio do PDF:", err);
   }
 }
 
@@ -170,35 +160,10 @@ async function finalizarFormulario() {
         <p>Aguarde enquanto salvamos suas respostas.</p>
       </div>`;
 
-    const columnValues = {
-      text_mkpjsmpc: respostas[0] || "Não informado",
-      text_mkpj3d37: respostas[1] || "Não informado",
-      text_mkpjsfrs: respostas[2] || "Não informado",
-      text_mkpjybzm: respostas[3] || "Não informado",
-      text_mkpj97jw: respostas[4] || "Não informado",
-      text_mkpj4ffz: respostas[5] || "Não informado",
-      text_mkpjab1d: respostas[6] || "Não informado",
-      text_mkpj3h7a: respostas[7] || "Não informado",
-      text_mkpjvnnq: respostas[8] || "Não informado",
-      text_mkpjyxr7: respostas[9] || "Não informado",
-      text_mkpjfymr: respostas[10] || "Não informado",
-      text_mkpjycdk: respostas[11] || "Não informado",
-      text_mkpjmap: respostas[12] || "Não informado",
-      text_mkpjr0bc: respostas[13] || "Não informado",
-      text_mkpj1prj: respostas[14] || "Não informado",
-      text_mkpj3yza: respostas[15] || "Não informado",
-      text_mkpjkg81: respostas[16] || "Não informado",
-      text_mkpjrrx1: respostas[17] || "Não informado",
-      text_mkpjswmv: respostas[18] || "Não informado",
-      text_mkpj9c1b: respostas[19] || "Não informado",
-      text_mkpjzpdx: respostas[20] || "Não informado",
-      text_mkpj4ay: respostas[21] || "Não informado",
-      text_mkpj98d6: respostas[22] || "Não informado",
-      text_mkpjwtgj: respostas[23] || "Não informado",
-      text_mkpjj31v: respostas[24] || "Não informado",
-      text_mkpjn1jp: respostas[25] || "Não informado",
-      text_mkpj6st5: respostas[26] || "Não informado",
-    };
+    const columnValues = {};
+    for (let i = 0; i < respostas.length; i++) {
+      columnValues[`text_mkpj${Math.random().toString(36).substring(2, 8)}`] = respostas[i] || "Não informado";
+    }
 
     const mutation = {
       query: `mutation {
