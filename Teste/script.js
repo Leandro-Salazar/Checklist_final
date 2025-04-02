@@ -1,3 +1,5 @@
+
+
 let etapaAtual = 0;
 const totalEtapas = perguntas.length;
 const respostas = [];
@@ -108,53 +110,58 @@ setTimeout(() => {
   
 }
 
-async function gerarPDF(respostas) {
-  const { jsPDF } = window.jspdf;  // Desestruturando a biblioteca jsPDF
-  const doc = new jsPDF();
-
-  // Adicionando título ao PDF
-  doc.setFontSize(16);
-  doc.text("Formulário - Respostas", 20, 20);
-
-  // Adicionando as perguntas e respostas
-  let yPosition = 30;  // Posição Y inicial
-  perguntas.forEach((pergunta, index) => {
-    const resposta = respostas[index] || "Não informado";
-    doc.setFontSize(12);
-    doc.text(`${pergunta}: ${resposta}`, 20, yPosition);
-    yPosition += 10; // Espaçamento entre as perguntas
-  });
-
-  // Gerar o arquivo PDF
-  const pdfBase64 = doc.output('datauristring');
-  return pdfBase64;
-}
-
-async function enviarPDFParaColuna(pdfFile, itemId, colunaId) {
-  const formData = new FormData();
-  formData.append('file', pdfFile);  // Adiciona o arquivo PDF gerado
-  formData.append('item_id', itemId); // Adiciona o ID do item no Monday
-  formData.append('column_id', colunaId); // Adiciona o ID da coluna de arquivos
-
+async function gerarEPDF(itemId, respostas, perguntas, mondayToken, columnId = "file_mkpjwzm") {
   try {
-    const response = await fetch('https://api.monday.com/v2/files', {
-      method: 'POST',
-      headers: {
-        'Authorization': MONDAY_API_TOKEN
-      },
-      body: formData
+    const doc = new window.jspdf.jsPDF();
+
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text("Checklist Técnico - You.On", 10, 15);
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+
+    let y = 30;
+    for (let i = 0; i < respostas.length; i++) {
+      const pergunta = perguntas[i] || `Pergunta ${i + 1}`;
+      const resposta = respostas[i] || "Não informado";
+
+      doc.text(`${i + 1}. ${pergunta}`, 10, y);
+      y += 7;
+      doc.text(`Resposta: ${resposta}`, 12, y);
+      y += 10;
+
+      if (y > 270) {
+        doc.addPage();
+        y = 20;
+      }
+    }
+
+    const pdfBlob = doc.output("blob");
+    const pdfFile = new File([pdfBlob], "Checklist_Tecnico_YouOn.pdf", { type: "application/pdf" });
+
+    // Enviar para a rota local que faz o upload pra Monday
+    const formData = new FormData();
+    formData.append("file", pdfFile);
+    formData.append("itemId", itemId);
+    formData.append("columnId", columnId);
+
+    const response = await fetch("/api/upload-pdf", {
+      method: "POST",
+      body: formData,
     });
 
     const result = await response.json();
-    if (result.data?.add_file_to_column?.id) {
-      console.log("Arquivo PDF enviado com sucesso para a coluna!");
-    } else {
-      throw new Error('Erro ao enviar o arquivo PDF para a coluna');
+
+    if (!result?.data?.add_file_to_column?.id) {
+      throw new Error("Erro ao anexar o PDF via backend (Vercel).");
     }
-  } catch (error) {
-    console.error("Erro ao enviar o arquivo PDF para a coluna:", error);
+
+    console.log("✅ PDF enviado com sucesso pela rota /api/upload-pdf");
+  } catch (err) {
+    console.error("❌ Erro ao gerar/enviar PDF via rota backend:", err);
   }
 }
+
 
 async function finalizarFormulario() {
   respostas[etapaAtual] = respostaInput.value.trim();
@@ -221,21 +228,13 @@ async function finalizarFormulario() {
 
     const result = await response.json();
     if (result.data?.create_item?.id) {
-      // Gerar o PDF
-      const pdfBase64 = await gerarPDF(respostas);
-
-      // Converte o base64 para um Blob para envio
-      const pdfBlob = await fetch(pdfBase64).then(res => res.blob());
-      const pdfFile = new File([pdfBlob], "respostas_checklist.pdf", { type: "application/pdf" });
-
       // ID do item criado
       const itemId = result.data.create_item.id;
 
-      // ID da coluna de arquivo
-      const colunaId = "file_mkpjwzm"; // Coluna de arquivos no Monday
 
       // Enviar o PDF para a coluna de arquivo
-      await enviarPDFParaColuna(pdfFile, itemId, colunaId);
+      await gerarEPDF(itemId, respostas, perguntas, MONDAY_API_TOKEN);
+
 
       form.innerHTML = `
         <div class="finalizacao">

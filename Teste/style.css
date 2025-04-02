@@ -57,6 +57,14 @@ body {
     height: 100%;
   }
 
+  .finalizacao{
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    flex-direction: column;
+    padding: 20px;
+  }
+
 /* Texto da pergunta */
 .pergunta {
   width: 100%;
