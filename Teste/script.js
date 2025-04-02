@@ -141,9 +141,9 @@ async function gerarEPDF(itemId, respostas, perguntas, mondayToken, columnId = "
       method: "POST",
       body: formData,
     });
-
+    
     const text = await res.text();
-
+    
     try {
       const result = JSON.parse(text);
       if (!result?.data?.add_file_to_column?.id) {
@@ -154,7 +154,7 @@ async function gerarEPDF(itemId, respostas, perguntas, mondayToken, columnId = "
       throw new Error("Erro ao interpretar resposta do backend: " + text);
     }
   } catch (err) {
-    console.error("❌ Erro ao gerar/enviar PDF via rota backend:", err);
+    console.error("❌ Erro ao gerar/enviar PDF via rota backend:" + text);
   }
 }
 
