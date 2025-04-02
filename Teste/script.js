@@ -1,3 +1,4 @@
+
 let etapaAtual = 0;
 const totalEtapas = perguntas.length;
 const respostas = [];
@@ -233,7 +234,7 @@ async function finalizarFormulario() {
     const response = await fetch("https://api.monday.com/v2", {
       method: "POST",
       headers: {
-        "Authorization": MONDAY_API_TOKEN,
+        "Authorization": process.env.MONDAY_API_TOKEN,
         "Content-Type": "application/json"
       },
       body: JSON.stringify(mutation)
