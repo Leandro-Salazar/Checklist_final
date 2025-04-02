@@ -1,10 +1,10 @@
 {
   "name": "teste",
   "version": "1.0.0",
+  "type": "module",
   "main": "data.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-     "start": "node -r dotenv/config api/upload-pdf.js"
+    "start": "node api/upload-pdf.js"
   },
   "keywords": [],
   "author": "",
