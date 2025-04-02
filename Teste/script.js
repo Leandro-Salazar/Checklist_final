@@ -145,7 +145,7 @@ async function gerarEPDF(itemId, respostas, perguntas, mondayToken, columnId = "
     formData.append("itemId", itemId);
     formData.append("columnId", columnId);
 
-    const response = await fetch("/api/upload-pdf", {
+    await fetch("https://check-list-one.vercel.app/api/upload-pdf", {
       method: "POST",
       body: formData,
     });
