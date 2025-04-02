@@ -145,12 +145,12 @@ async function gerarEPDF(itemId, respostas, perguntas, mondayToken, columnId = "
     formData.append("itemId", itemId);
     formData.append("columnId", columnId);
 
-    await fetch("https://check-list-one.vercel.app/api/upload-pdf", {
+    const res = await fetch("https://check-list-one.vercel.app/api/upload-pdf", {
       method: "POST",
       body: formData,
     });
-
-    const result = await response.json();
+    
+    const result = await res.json();
 
     if (!result?.data?.add_file_to_column?.id) {
       throw new Error("Erro ao anexar o PDF via backend (Vercel).");
