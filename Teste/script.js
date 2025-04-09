@@ -4,7 +4,7 @@ const totalEtapas = perguntas.length;
 const respostas = [];
  
 // Configurações do Monday.com
-const MONDAY_API_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJ0aWQiOjQ5MjM2MDA1MCwiYWFpIjoxMSwidWlkIjo3MzQ1MjY3MiwiaWFkIjoiMjAyNS0wMy0yOFQxNTozNzozOS4wMDBaIiwicGVyIjoibWU6d3JpdGUiLCJhY3RpZCI6MTgzNzg0NDMsInJnbiI6InVzZTEifQ.2qLzYivYuqpDvc8554M8TVYt-tAZl4LMzhuX6il8au4";
+const MONDAY_API_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJ0aWQiOjQ5NDQ3NTExNiwiYWFpIjoxMSwidWlkIjo3MzQ1MjY5MCwiaWFkIjoiMjAyNS0wNC0wMlQxNDowNDozNi4wMDBaIiwicGVyIjoibWU6d3JpdGUiLCJhY3RpZCI6MTgzNzg0NDMsInJnbiI6InVzZTEifQ.fjATkhxRPqBtyZSmhSEF3WxSTNmECSVa2R2QZehXVWs";
 const MONDAY_BOARD_ID = 8821870387;
  
 // Elementos do DOM
@@ -129,54 +129,7 @@ function atualizarPergunta() {
   }, 1600);
 }
  
-async function gerarPDF(respostas) {
-  const { jsPDF } = window.jspdf;  // Desestruturando a biblioteca jsPDF
-  const doc = new jsPDF();
- 
-  // Adicionando título ao PDF
-  doc.setFontSize(16);
-  doc.text("Formulário - Respostas", 20, 20);
- 
-  // Adicionando as perguntas e respostas
-  let yPosition = 30;  // Posição Y inicial
-  perguntas.forEach((pergunta, index) => {
-    const resposta = respostas[index] || "Não informado";
-    doc.setFontSize(12);
-    doc.text(`${pergunta}: ${resposta}`, 20, yPosition);
-    yPosition += 10; // Espaçamento entre as perguntas
-  });
- 
-  // Gerar o arquivo PDF
-  const pdfBase64 = doc.output('datauristring');
-  return pdfBase64;
-}
- 
-async function enviarPDFParaColuna(pdfFile, itemId, colunaId) {
-  const formData = new FormData();
-  formData.append('file', pdfFile);  // Adiciona o arquivo PDF gerado
-  formData.append('item_id', itemId); // Adiciona o ID do item no Monday
-  formData.append('column_id', colunaId); // Adiciona o ID da coluna de arquivos
- 
-  try {
-    const response = await fetch('https://api.monday.com/v2/files', {
-      method: 'POST',
-      headers: {
-        'Authorization': MONDAY_API_TOKEN,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(mutation)
-    });
- 
-    const result = await response.json();
-    if (result.data?.add_file_to_column?.id) {
-      console.log("Arquivo PDF enviado com sucesso para a coluna!");
-    } else {
-      throw new Error('Erro ao enviar o arquivo PDF para a coluna');
-    }
-  } catch (error) {
-    console.error("Erro ao enviar o arquivo PDF para a coluna:", error);
-  }
-}
+
  
 async function finalizarFormulario() {
   respostas[etapaAtual] = respostaInput.value.trim();
@@ -191,32 +144,32 @@ async function finalizarFormulario() {
 
     const columnValues = {
       text_mkpjsmpc: respostas[0] || "Não informado",
-      text_mkpj3d37: respostas[1] || "Não informado",
-      text_mkpjsfrs: respostas[2] || "Não informado",
-      text_mkpjybzm: respostas[3] || "Não informado",
-      text_mkpj97jw: respostas[4] || "Não informado",
-      text_mkpj4ffz: respostas[5] || "Não informado",
-      text_mkpjab1d: respostas[6] || "Não informado",
-      text_mkpj3h7a: respostas[7] || "Não informado",
-      text_mkpjvnnq: respostas[8] || "Não informado",
-      text_mkpjyxr7: respostas[9] || "Não informado",
-      text_mkpjfymr: respostas[10] || "Não informado",
-      text_mkpjycdk: respostas[11] || "Não informado",
-      text_mkpjmap: respostas[12] || "Não informado",
-      text_mkpjr0bc: respostas[13] || "Não informado",
-      text_mkpj1prj: respostas[14] || "Não informado",
-      text_mkpj3yza: respostas[15] || "Não informado",
-      text_mkpjkg81: respostas[16] || "Não informado",
-      text_mkpjrrx1: respostas[17] || "Não informado",
-      text_mkpjswmv: respostas[18] || "Não informado",
-      text_mkpj9c1b: respostas[19] || "Não informado",
-      text_mkpjzpdx: respostas[20] || "Não informado",
-      text_mkpj4ay: respostas[21] || "Não informado",
-      text_mkpj98d6: respostas[22] || "Não informado",
-      text_mkpjwtgj: respostas[23] || "Não informado",
-      text_mkpjj31v: respostas[24] || "Não informado",
-      text_mkpjn1jp: respostas[25] || "Não informado",
-      text_mkpj6st5: respostas[26] || "Não informado",
+      text_mkpnpxjt: respostas[1] || "Não informado",
+      text_mkpntfje: respostas[2] || "Não informado",
+      text_mkpns9mw: respostas[3] || "Não informado",
+      text_mkpnrmd0: respostas[4] || "Não informado",
+      text_mkpn766e: respostas[5] || "Não informado",
+      text_mkpnn53k: respostas[6] || "Não informado",
+      text_mkpnxs2v: respostas[7] || "Não informado",
+      text_mkpnza93: respostas[8] || "Não informado",
+      text_mkpnzzsa: respostas[9] || "Não informado",
+      text_mkpncg6g: respostas[10] || "Não informado",
+      text_mkpnj2z2: respostas[11] || "Não informado",
+      text_mkpn67sw: respostas[12] || "Não informado",
+      text_mkpntpbk: respostas[13] || "Não informado",
+      text_mkpndc5k: respostas[14] || "Não informado",
+      text_mkpnrkbk: respostas[15] || "Não informado",
+      text_mkpn1nf1: respostas[16] || "Não informado",
+      text_mkpnc0wq: respostas[17] || "Não informado",
+      text_mkpnh13t: respostas[18] || "Não informado",
+      text_mkpn5rsk: respostas[19] || "Não informado",
+      text_mkpna61f: respostas[20] || "Não informado",
+      text_mkpntay0: respostas[21] || "Não informado",
+      text_mkpntemc: respostas[22] || "Não informado",
+      text_mkpnfbbb: respostas[23] || "Não informado",
+      text_mkpn3qcd: respostas[24] || "Não informado",
+      text_mkpnqmth: respostas[25] || "Não informado",
+      text_mkpncnc3: respostas[26] || "Não informado",
     };
 
     const mutation = {
@@ -241,16 +194,6 @@ async function finalizarFormulario() {
 
     const result = await response.json();
     if (result.data?.create_item?.id) {
-      const pdfBase64 = await gerarPDF(respostas);
-
-      const pdfBlob = await fetch(pdfBase64).then(res => res.blob());
-      const pdfFile = new File([pdfBlob], "respostas_checklist.pdf", { type: "application/pdf" });
-
-      const itemId = result.data.create_item.id;
-      const colunaId = "file_mkpjwzm";
-
-      await enviarPDFParaColuna(pdfFile, itemId, colunaId);
-
       form.innerHTML = `
         <div class="finalizacao">
           <h2>Checklist enviado!</h2>
@@ -269,7 +212,7 @@ async function finalizarFormulario() {
         <button onclick="window.location.reload()" class="btn">Tentar novamente</button>
       </div>`;
     console.error("Erro detalhado:", error);
-  } finally {
+  }finally {
     setTimeout(() => {
       window.location.href = "https://www.youonenergy.com/";
     }, 5000);
