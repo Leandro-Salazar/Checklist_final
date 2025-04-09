@@ -37,7 +37,11 @@ function atualizarProgresso() {
 }
  
 // Ao carregar a página
-window.addEventListener('load', checkScreenSize);
+window.addEventListener('load', () => {
+  checkScreenSize();  
+  atualizarProgresso(); 
+});
+
 window.addEventListener('resize', checkScreenSize);
  
 // Ao clicar em "Vamos Lá!"
