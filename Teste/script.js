@@ -3,10 +3,6 @@ let etapaAtual = 0;
 const totalEtapas = perguntas.length;
 const respostas = [];
  
-// Configurações do Monday.com
-const MONDAY_API_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJ0aWQiOjQ5NDQ3NTExNiwiYWFpIjoxMSwidWlkIjo3MzQ1MjY5MCwiaWFkIjoiMjAyNS0wNC0wMlQxNDowNDozNi4wMDBaIiwicGVyIjoibWU6d3JpdGUiLCJhY3RpZCI6MTgzNzg0NDMsInJnbiI6InVzZTEifQ.fjATkhxRPqBtyZSmhSEF3WxSTNmECSVa2R2QZehXVWs";
-const MONDAY_BOARD_ID = 8821870387;
- 
 // Elementos do DOM
 const startButton = document.getElementById('startButton');
 const loginBox = document.querySelector('.form-box.login');
@@ -146,57 +142,16 @@ async function finalizarFormulario() {
         <p>Aguarde enquanto salvamos suas respostas.</p>
       </div>`;
 
-    const columnValues = {
-      text_mkpjsmpc: respostas[0] || "Não informado",
-      text_mkpnpxjt: respostas[1] || "Não informado",
-      text_mkpntfje: respostas[2] || "Não informado",
-      text_mkpns9mw: respostas[3] || "Não informado",
-      text_mkpnrmd0: respostas[4] || "Não informado",
-      text_mkpn766e: respostas[5] || "Não informado",
-      text_mkpnn53k: respostas[6] || "Não informado",
-      text_mkpnxs2v: respostas[7] || "Não informado",
-      text_mkpnza93: respostas[8] || "Não informado",
-      text_mkpnzzsa: respostas[9] || "Não informado",
-      text_mkpncg6g: respostas[10] || "Não informado",
-      text_mkpnj2z2: respostas[11] || "Não informado",
-      text_mkpn67sw: respostas[12] || "Não informado",
-      text_mkpntpbk: respostas[13] || "Não informado",
-      text_mkpndc5k: respostas[14] || "Não informado",
-      text_mkpnrkbk: respostas[15] || "Não informado",
-      text_mkpn1nf1: respostas[16] || "Não informado",
-      text_mkpnc0wq: respostas[17] || "Não informado",
-      text_mkpnh13t: respostas[18] || "Não informado",
-      text_mkpn5rsk: respostas[19] || "Não informado",
-      text_mkpna61f: respostas[20] || "Não informado",
-      text_mkpntay0: respostas[21] || "Não informado",
-      text_mkpntemc: respostas[22] || "Não informado",
-      text_mkpnfbbb: respostas[23] || "Não informado",
-      text_mkpn3qcd: respostas[24] || "Não informado",
-      text_mkpnqmth: respostas[25] || "Não informado",
-      text_mkpncnc3: respostas[26] || "Não informado",
-    };
-
-    const mutation = {
-      query: `mutation {
-        create_item(
-          board_id: ${MONDAY_BOARD_ID},
-          item_name: "Checklist ${respostas[0] || 'Novo'} - ${new Date().toLocaleDateString()}",
-          column_values: "${JSON.stringify(columnValues).replace(/"/g, '\\"')}"
-        ) { id }
-      }`
-    };
-
-    // ✅ Aqui está a correção:
-    const response = await fetch("https://api.monday.com/v2", {
+    const response = await fetch("http://localhost:3000/api/enviar-formulario", {
       method: "POST",
       headers: {
-        "Authorization": MONDAY_API_TOKEN,
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(mutation)
+      body: JSON.stringify({ respostas })
     });
 
     const result = await response.json();
+
     if (result.data?.create_item?.id) {
       form.innerHTML = `
         <div class="finalizacao">
@@ -204,6 +159,56 @@ async function finalizarFormulario() {
           <p>Seu formulário foi registrado em nossa plataforma.<br>
           Você será direcionado para nosso site em breve!</p>
         </div>`;
+
+      // ✅ Gera PDF e envia para o backend
+      import("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js").then(() => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+      
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const margemTopo = 20;
+        const margemInferior = 20;
+        const alturaLinha = 8;
+        let y = margemTopo;
+      
+        respostas.forEach((resposta, index) => {
+          const pergunta = perguntas[index];
+          const textoPergunta = `${index + 1}. ${pergunta}`;
+          const textoResposta = `Resposta: ${resposta}`;
+      
+          const linhasPergunta = doc.splitTextToSize(textoPergunta, 180);
+          const linhasResposta = doc.splitTextToSize(textoResposta, 180);
+      
+          const alturaBloco = (linhasPergunta.length + linhasResposta.length) * alturaLinha + 4;
+      
+          // Se não houver espaço suficiente na página atual, cria nova
+          if (y + alturaBloco > pageHeight - margemInferior) {
+            doc.addPage();
+            y = margemTopo;
+          }
+      
+          doc.setFontSize(10);
+          doc.text(linhasPergunta, 10, y);
+          y += linhasPergunta.length * alturaLinha;
+      
+          doc.setFontSize(12);
+          doc.text(linhasResposta, 10, y);
+          y += linhasResposta.length * alturaLinha + 6;
+        });
+      
+        const pdfBlob = doc.output("blob");
+        const formData = new FormData();
+        formData.append("arquivo", pdfBlob, "checklist.pdf");
+        formData.append("itemId", result.data.create_item.id);
+      
+        fetch("http://localhost:3000/api/upload-pdf", {
+          method: "POST",
+          body: formData
+        })
+          .then(() => console.log("✅ PDF enviado com sucesso"))
+          .catch((error) => console.error("❌ Erro ao enviar o PDF:", error));
+      });
+      
     } else {
       throw new Error('Erro desconhecido ao enviar para Monday');
     }
@@ -216,12 +221,11 @@ async function finalizarFormulario() {
         <button onclick="window.location.reload()" class="btn">Tentar novamente</button>
       </div>`;
     console.error("Erro detalhado:", error);
-  }finally {
-    setTimeout(() => {
-      window.location.href = "https://www.youonenergy.com/";
-    }, 5000);
   }
 }
+
+
+
  
  
  
