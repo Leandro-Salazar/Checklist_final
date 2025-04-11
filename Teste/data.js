@@ -1,4 +1,4 @@
-const imagensPerguntas = [
+export const imagensPerguntas = [
     './img/imagem-container-verde.jpg',
     './img/youon-home.jpg',
     './img/container-cinza.jpg',
@@ -10,7 +10,7 @@ const imagensPerguntas = [
     './img/image-10.jpeg',  
   ];
   
-  const placeholders = [
+  export const placeholders = [
     "Ex.: Carlos Alberto",
     "Ex.: 1000KW",
     "Ex.: Sim",
@@ -40,7 +40,7 @@ const imagensPerguntas = [
     "Ex.: Cotar em regime turn key, o qual engloba EPC e serviços de M&M"
   ];
    
-  const curiosidades = [
+  export const curiosidades = [
     "Você sabia? A You.On é pioneira em armazenamento de energia no Brasil.",
     "Na falta de energia, mantém sua casa ligada",
     "Segurança e conforto para sua família.",
@@ -69,7 +69,7 @@ const imagensPerguntas = [
     "Sistemas modernos, design sofisticado, diversas soluções.",
   ];
    
-  const perguntas = [
+  export const perguntas = [
     "Digite seu nome: ",
     "Qual é a demanda contratada da concessionária em kW (máxima potência entregue pela subestação)?",
     "A empresa nos dias atuais sofre alguma penalização da concessionária por exceder essa demanda contratada ?",
