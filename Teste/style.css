@@ -107,6 +107,17 @@ body {
   gap: 10px;
   width: 100%;  
 }
+
+.btn{
+  transition: .3s ease-in-out;
+}
+
+.btn:hover{
+  background-color: #bed22f;
+  font-size: 20px;
+  transition: .3s ease-in-out;  
+  color: #000;
+}
 .dica-pergunta {
   font-size: 14px;
   color: #666;
