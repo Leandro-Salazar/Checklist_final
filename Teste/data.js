@@ -12,6 +12,7 @@ export const imagensPerguntas = [
   
   export const placeholders = [
     "Ex.: Carlos Alberto",
+    "a",
     "Ex.: 1000KW",
     "Ex.: Sim",
     "Ex.: O maior excedente durante o dia é de 100KW por 2 horas.",
@@ -42,6 +43,7 @@ export const imagensPerguntas = [
    
   export const curiosidades = [
     "Você sabia? A You.On é pioneira em armazenamento de energia no Brasil.",
+    "a",
     "Na falta de energia, mantém sua casa ligada",
     "Segurança e conforto para sua família.",
     "Energia garantida. Negócios garantidos.",
@@ -71,6 +73,7 @@ export const imagensPerguntas = [
    
   export const perguntas = [
     "Digite seu nome: ",
+    "**UPLOAD_FATURA**", // <- nova etapa para upload
     "Qual é a demanda contratada da concessionária em kW (máxima potência entregue pela subestação)?",
     "A empresa nos dias atuais sofre alguma penalização da concessionária por exceder essa demanda contratada ?",
     "Caso haja essa penalização, em quantos KW se estima que seja esse excedente e por quanto tempo ? Se existirem vários excedentes durante o dia, informar o de maior demanda.",
