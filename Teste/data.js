@@ -73,10 +73,7 @@ export const imagensPerguntas = [
    
   export const perguntas = [
     "Digite seu nome: ",
-    "**UPLOAD_FATURA**", // <- nova etapa para upload
-    "Qual é a demanda contratada da concessionária em kW (máxima potência entregue pela subestação)?",
-    "A empresa nos dias atuais sofre alguma penalização da concessionária por exceder essa demanda contratada ?",
-    "Caso haja essa penalização, em quantos KW se estima que seja esse excedente e por quanto tempo ? Se existirem vários excedentes durante o dia, informar o de maior demanda.",
+    "**UPLOAD_FATURA**",
     "Alternativamente à questão acima, pedimos informar o perfil de carga, isto é, o perfil de consumo diário da planta.",
     "Com relação à carga total alimentada pela rede elétrica hoje, existem cargas indutivas tais como motores elétricos, compressores de ar condicionado, elevadores, transformadores, etc. ?",
     "Caso existam cargas indutivas, quanto essas cargas representam percentualmente (em KW) com relação a carga total ?",
@@ -88,7 +85,6 @@ export const imagensPerguntas = [
     "Do total de cargas críticas, qual o percentual de cargas indutivas, isto é, motores elétricos, compressores de ar condicionado, elevadores, transformadores, etc. ?",
     "Hoje, existe alguma planta solar instalada ? Qual a potência dessa planta ?",
     "Caso não exista, há espaço físico para instalação de uma nova planta solar ? Qual é essa área aproximadamente?",
-    "Qual a modalidade tarifária atual da empresa ? Essa informação consta da conta de energia.",
     "Há excedente na geração solar durante a produção diária que possa ser aproveitada em outro horário do dia ?",
     "Possui gerador a diesel no local? Se sim qual potência em ( kVA/kW).",
     "Qual valor do combustível no local do Projeto (R$/L)?",
@@ -101,3 +97,4 @@ export const imagensPerguntas = [
     "Fornecer desenhos e diagramas unifilares do ponto de conexão do projeto.",
     "Outras observações técnicas relevantes sobre o escopo"
   ];
+  

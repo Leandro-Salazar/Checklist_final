@@ -129,8 +129,9 @@ async function finalizarFormulario() {
         const formData = new FormData();
         formData.append("arquivo", arquivoFatura);
         formData.append("itemId", itemId);
+        formData.append("coluna", "file_mkq2g4mm")
 
-        await fetch("http://localhost:3000/api/upload-fatura", {
+        await fetch("http://localhost:3000/api/upload-pdf", {
           method: "POST",
           body: formData
         });
