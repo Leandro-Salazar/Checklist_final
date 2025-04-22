@@ -84,13 +84,20 @@ function atualizarPergunta() {
 
   const inputBoxTexto = document.getElementById("inputBoxTexto");
   const inputBoxArquivo = document.getElementById("inputBoxArquivo");
+  const inputBoxCheckBox = document.getElementById("inputBoxCheckBox");
 
   if (etapaAtual === 1) {
     inputBoxTexto.style.display = 'none';
     inputBoxArquivo.style.display = 'block';
-  } else {
+    inputBoxCheckBox.style.display = 'none';
+  } else if (etapaAtual === 2) {
+    inputBoxTexto.style.display = 'none';
+    inputBoxArquivo.style.display = 'none';
+    inputBoxCheckBox.style.display = 'block'
+  } else{
     inputBoxTexto.style.display = 'block';
     inputBoxArquivo.style.display = 'none';
+    inputBoxCheckBox.style.display = 'none'
   }
 
   setTimeout(() => respostaInput.focus(), 50);

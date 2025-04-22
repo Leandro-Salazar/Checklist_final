@@ -74,6 +74,7 @@ export const imagensPerguntas = [
   export const perguntas = [
     "Digite seu nome: ",
     "**UPLOAD_FATURA**",
+    "Checkbox",
     "Alternativamente à questão acima, pedimos informar o perfil de carga, isto é, o perfil de consumo diário da planta.",
     "Com relação à carga total alimentada pela rede elétrica hoje, existem cargas indutivas tais como motores elétricos, compressores de ar condicionado, elevadores, transformadores, etc. ?",
     "Caso existam cargas indutivas, quanto essas cargas representam percentualmente (em KW) com relação a carga total ?",
