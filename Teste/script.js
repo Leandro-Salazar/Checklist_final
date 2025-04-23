@@ -52,9 +52,15 @@ nextButton.addEventListener("click", async () => {
     }
     arquivoFatura = file;
     respostas[etapaAtual] = "Fatura anexada";
-  } else {
+  } else if (etapaAtual === 2) {
+    const selectElement = document.getElementById("selectOpcoes");
+    const selecionados = Array.from(selectElement.selectedOptions).map(option => option.value);
+    respostas[etapaAtual] = selecionados.length > 0 ? selecionados.join(", ") : "Nenhuma opção selecionada";
+  }
+   else {
     respostas[etapaAtual] = respostaInput.value.trim();
   }
+  
   etapaAtual++;
 
   if (etapaAtual < totalEtapas) {

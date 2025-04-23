@@ -43,11 +43,14 @@
         </div>
 
         <div id="inputBoxCheckBox" style="display: none;">
-          <label><input type="checkbox" name="checkbox-opcao" value="Gerador diesel"> Gerador diesel</label><br>
-          <label><input type="checkbox" name="checkbox-opcao" value="Automação existente"> Automação existente</label><br>
-          <label><input type="checkbox" name="checkbox-opcao" value="Planta solar instalada"> Planta solar instalada</label><br>
-          <label><input type="checkbox" name="checkbox-opcao" value="Inversores presentes"> Inversores presentes</label><br>
+          <select id="selectOpcoes" name="opcoes">
+            <option value="Peak Shaving">Peak Shaving</option>
+            <option value="Backup">Backup</option>
+            <option value="Arbitragem">Arbitragem</option>
+            <option value="Outros">Outros</option>
+          </select>
         </div>
+        
         <!-- Botões -->
         <div class="botoes">
           <button type="button" class="btn" id="prevButton" style="display: none;">Anterior</button>

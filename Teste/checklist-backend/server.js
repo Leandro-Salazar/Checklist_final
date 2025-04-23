@@ -18,6 +18,7 @@ app.post('/api/enviar-formulario', async (req, res) => {
 
     const columnValues = {
       text_mkpjsmpc: respostas[0],
+      text_mkq9ep39: respostas[2],
       text_mkpnrmd0: respostas[3],
       text_mkpn766e: respostas[4],
       text_mkpnn53k: respostas[5],
