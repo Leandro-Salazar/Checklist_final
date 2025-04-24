@@ -15,6 +15,7 @@ body {
     background: linear-gradient(90deg, #e2e2e2  , #bfbfc1);
 }
 
+
 .container {  
     position: relative;
     width: 850px;
@@ -202,6 +203,16 @@ form{
   top: 50%;
   transform: translateY(-50%);
 }
+.custom-upload-button {
+  background-color: #e5e5e5;
+  border: 1px solid #ccc;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-block;
+  font-weight: 600;
+}
+
 
 .forgot-link {
   margin: -15px 0 15px;

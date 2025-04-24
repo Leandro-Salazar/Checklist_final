@@ -95,6 +95,21 @@ nextButton.addEventListener("click", async () => {
   if (etapaAtual === 1) {
     const file = document.getElementById("uploadFatura").files[0];
     const erroUpload = document.getElementById("uploadErro");
+    const uploadInput = document.getElementById("uploadFatura");
+    const arquivoSelecionado = document.getElementById("arquivoSelecionado");
+    
+    uploadInput.addEventListener("change", () => {
+      if (uploadInput.files.length > 0) {
+        const arquivo = uploadInput.files[0];
+        arquivoSelecionado.innerHTML = `
+          <strong>Arquivo selecionado:</strong> ${arquivo.name} (${(arquivo.size / 1024).toFixed(1)} KB)
+        `;
+      } else {
+        arquivoSelecionado.innerHTML = ""; // limpa se nenhum arquivo
+      }
+    });
+    
+
 
     if (!file) {
       erroUpload.style.display = 'block';

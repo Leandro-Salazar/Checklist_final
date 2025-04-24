@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://alcdn.msauth.net/browser/2.24.0/js/msal-browser.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 
 <body>
@@ -37,12 +38,13 @@
           <input type="text" class="input-projeto" id="respostaInput" placeholder="Digite aqui" />
         </div>
         
-        <div class="input-box" id="inputBoxArquivo" style="display: none;">
-          <div id="uploadErro" style="color: red; margin-top: 8px; display: none;">Por favor, selecione um arquivo.</div>
-          <label for="uploadFatura" class="label-arquivo"></label>
-          <input type="file" class="input-projeto" id="uploadFatura" accept=".pdf,.jpg,.jpeg,.png" required />
+        <div id="inputBoxArquivo" style="display: none;">
+          <label for="uploadFatura" class="custom-upload-button"><i class="fa-solid fa-arrow-up-from-bracket"></i>Escolher Arquivo</label>
+          <input type="file" id="uploadFatura" style="display: none;" />
+          <div id="arquivoSelecionado" style="margin-top: 10px; font-size: 14px; color: #333;"></div>
+          <div id="uploadErro" style="color: red; margin-top: 8px; display: none;"></div>
         </div>
-
+        
         <div id="inputBoxCheckBox" style="display: none;">
           <select id="selectOpcoes" name="opcoes">
             <option value="">Selecione uma opção...</option>
