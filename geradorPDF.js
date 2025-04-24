@@ -73,7 +73,7 @@ export async function gerarPDF(respostas, perguntas, itemId) {
       formData.append("arquivo", pdfBlob, "checklist.pdf");
       formData.append("itemId", itemId);
 
-      fetch("http://localhost:3000/api/upload-pdf", {
+      fetch("https://checklist-final.onrender.com/api/upload-pdf", {
         method: "POST",
         body: formData
       })

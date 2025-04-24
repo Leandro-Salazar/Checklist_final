@@ -255,7 +255,7 @@ async function finalizarFormulario() {
   form.innerHTML = `<div class="finalizacao"><h2>Enviando para nossa plataforma...</h2><p>Aguarde enquanto salvamos suas respostas.</p></div>`;
 
   try {
-    const response = await fetch("http://localhost:3000/api/enviar-formulario", {
+    const response = await fetch("https://checklist-final.onrender.com/api/enviar-formulario", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ respostas })
@@ -271,7 +271,7 @@ async function finalizarFormulario() {
         formData.append("itemId", itemId);
         formData.append("coluna", "file_mkq2g4mm");
 
-        await fetch("http://localhost:3000/api/upload-pdf", {
+        await fetch("https://checklist-final.onrender.com/api/upload-pdf", {
           method: "POST",
           body: formData
         });
