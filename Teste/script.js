@@ -13,9 +13,6 @@ let redirecionouPeak = false;
 let redirecionouBackup = false;
 let redirecionouOutros = false;
 
-
-
-
 const startButton = document.getElementById('startButton');
 const loginBox = document.querySelector('.form-box.login');
 const questionBox = document.querySelector('.form-box.question');
@@ -97,10 +94,16 @@ startButton.addEventListener('click', () => {
 nextButton.addEventListener("click", async () => {
   if (etapaAtual === 1) {
     const file = document.getElementById("uploadFatura").files[0];
+    const erroUpload = document.getElementById("uploadErro");
+
     if (!file) {
-      alert("Por favor, envie a fatura de energia antes de continuar.");
+      erroUpload.style.display = 'block';
+      erroUpload.textContent = "Por favor, selecione um arquivo.";
       return;
+    } else {
+      erroUpload.style.display = 'none';
     }
+    
     arquivoFatura = file;
     respostas[etapaAtual] = "Fatura anexada";
   } else if (etapaAtual === 2) {
@@ -117,26 +120,33 @@ nextButton.addEventListener("click", async () => {
     if (modoPeakShaving) etapaAtual = 11;
     if (modoBackup) etapaAtual = 12;
     if (modoOutros) etapaAtual = 11;
+  } else if ([3, 5].includes(etapaAtual)) {
+    // Captura a resposta do radio
+    const selected = document.querySelector('input[name="respostaRadio"]:checked');
+    if (!selected) {
+      alert("Por favor, selecione uma opção.");
+      return;
+    }
+    respostas[etapaAtual] = selected.value;
   } else {
     respostas[etapaAtual] = respostaInput.value.trim();
+  }
 
   // Se a etapa atual for 12 e o modo for Peak Shaving, vamos manualmente para a 3
   if (etapaAtual === 12 && modoPeakShaving && !redirecionouPeak) {
-    etapaAtual = 2; // para que a próxima seja a etapa 3
-    redirecionouPeak = true; // evita que isso aconteça de novo
+    etapaAtual = 2; 
+    redirecionouPeak = true; 
   }
 
   if (etapaAtual === 16 && modoBackup && !redirecionouBackup) {
-    etapaAtual = 2; // para que a próxima seja a etapa 3
+    etapaAtual = 2; 
     redirecionouBackup = true;
   }
   
   if (etapaAtual === 16 && modoOutros && !redirecionouOutros) {
     etapaAtual = 2; // a próxima será 3
     redirecionouOutros = true;
-  }
   
-
   }
 
   do {
@@ -158,9 +168,16 @@ prevButton.addEventListener("click", () => {
     etapaAtual--;
   } while (etapaAtual > 2 && devePularPergunta(etapaAtual));
 
+  // 👉 Ao voltar, limpa seleção de radio se estiver visível
+  if ([3, 5].includes(etapaAtual)) {
+    const radios = document.querySelectorAll('input[name="respostaRadio"]');
+    radios.forEach(r => r.checked = respostas[etapaAtual] === r.value);
+  }
+
   atualizarPergunta();
   atualizarProgresso();
 });
+
 
 function atualizarPergunta() {
   perguntaTexto.textContent = perguntas[etapaAtual];
@@ -175,19 +192,30 @@ function atualizarPergunta() {
   const inputBoxTexto = document.getElementById("inputBoxTexto");
   const inputBoxArquivo = document.getElementById("inputBoxArquivo");
   const inputBoxCheckBox = document.getElementById("inputBoxCheckBox");
+  const inputBoxRadio = document.getElementById("inputBoxRadio");
 
   if (etapaAtual === 1) {
     inputBoxTexto.style.display = 'none';
     inputBoxArquivo.style.display = 'block';
     inputBoxCheckBox.style.display = 'none';
+    inputBoxRadio.style.display = 'none';
   } else if (etapaAtual === 2) {
     inputBoxTexto.style.display = 'none';
     inputBoxArquivo.style.display = 'none';
     inputBoxCheckBox.style.display = 'block';
+    inputBoxRadio.style.display = 'none';
+  } else if ([3, 5].includes(etapaAtual)) {
+    // Perguntas com SIM/NÃO (FV e Gerador)
+    inputBoxTexto.style.display = 'none';
+    inputBoxArquivo.style.display = 'none';
+    inputBoxCheckBox.style.display = 'none';
+    inputBoxRadio.style.display = 'block';
+    document.querySelectorAll('input[name="respostaRadio"]').forEach(el => el.checked = false);
   } else {
     inputBoxTexto.style.display = 'block';
     inputBoxArquivo.style.display = 'none';
     inputBoxCheckBox.style.display = 'none';
+    inputBoxRadio.style.display = 'none';
   }
 
   setTimeout(() => respostaInput.focus(), 50);

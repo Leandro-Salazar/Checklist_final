@@ -38,12 +38,14 @@
         </div>
         
         <div class="input-box" id="inputBoxArquivo" style="display: none;">
-          <label for="uploadFatura" class="label-arquivo">Escolher Fatura de Energia:</label>
+          <div id="uploadErro" style="color: red; margin-top: 8px; display: none;">Por favor, selecione um arquivo.</div>
+          <label for="uploadFatura" class="label-arquivo"></label>
           <input type="file" class="input-projeto" id="uploadFatura" accept=".pdf,.jpg,.jpeg,.png" required />
         </div>
 
         <div id="inputBoxCheckBox" style="display: none;">
           <select id="selectOpcoes" name="opcoes">
+            <option value="">Selecione uma opção...</option>
             <option value="Peak Shaving">Peak Shaving</option>
             <option value="Backup">Backup</option>
             <option value="Arbitragem">Arbitragem</option>
@@ -51,7 +53,10 @@
           </select>
         </div>
         
-      
+        <div id="inputBoxRadio" style="display: none;">
+          <label><input type="radio" name="respostaRadio" value="Sim"> Sim</label>
+          <label><input type="radio" name="respostaRadio" value="Não"> Não</label>
+        </div>
         
         <!-- Botões -->
         <div class="botoes">

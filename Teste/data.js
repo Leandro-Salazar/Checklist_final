@@ -12,8 +12,7 @@ export const imagensPerguntas = [
   
   export const placeholders = [
     "Ex.: Carlos Alberto",
-    "a",
-    "Ex.: 1000KW",
+    "",
     "Ex.: Sim",
     "Ex.: O maior excedente durante o dia é de 100KW por 2 horas.",
     "Ex.: Em anexo segue o perfil diário de consumo da planta",
@@ -29,21 +28,10 @@ export const imagensPerguntas = [
     "Ex.: Existe uma área de 200m2 para instalação de uma planta",
     "Ex.: Modalidade A3 Verde com tarifa ponta e fora ponta.",
     "Ex.: Aparentemente existe mas não sei em quanto estimar este excedente",
-    "Ex.: Sim, 250KVA em 380Vca",
-    "Ex.: R$5,70 por litro",
-    "Ex.: O gerador diesel hoje é utilizado nos horários de ponta das 17h até às 20h",
-    "Ex.: A rede elétrica cai cerca de 5 vezes ao ano com duração média de 1 hora",
-    "Ex.: Será instalado na subestação na barra de 13,8KV",
-    "Ex.: 100 metros até a subestação.",
-    "Ex.: O sistema deverá ser instalado em sala elétrica a ser construida pelo proponente com dimensões máximas de 10m x 20m. É uma região distante do mar e portanto sem salinidade. Entretanto a umidade na região é alta, na ordem de 95%, e não se trata de uma área classificada.",
-    "Ex.: Sim, existe um superviório da empresa XXXX que deve conversar com o novo sistema de armazenamento com comunicação Modbus TCP IP.",
-    "Ex.: Seguem os desenhos elétricos em anexo.",
-    "Ex.: Cotar em regime turn key, o qual engloba EPC e serviços de M&M"
   ];
    
   export const curiosidades = [
     "Você sabia? A You.On é pioneira em armazenamento de energia no Brasil.",
-    "a",
     "Na falta de energia, mantém sua casa ligada",
     "Segurança e conforto para sua família.",
     "Energia garantida. Negócios garantidos.",
@@ -59,16 +47,6 @@ export const imagensPerguntas = [
     "Evite sobrecargas, estabilize a rede elétrica e leve energia confiável e sustentabilidade.",
     "Fizemos todo o sistema para subestação de Registro na Cidade de São Paulo.",
     "Você sabia? A You.On é pioneira em armazenamento de energia no Brasil.",
-    "Na falta de energia, mantém sua casa ligada",
-    "Segurança e conforto para sua família.",
-    "Energia garantida. Negócios garantidos.",
-    "Nossa equipe é 100% dedicada ao cliente.",
-    "Produção de energia infinita para sua empresa. 24 horas por dia.",
-    "Energia 100% limpa",
-    "Energia sustentável sem interrupções",
-    "Temos programas de fidelidade para clientes recorrentes.",
-    "Soluções modernas para um sistema mais seguro e eficiente.",
-    "Sistemas modernos, design sofisticado, diversas soluções.",
   ];
    
   export const perguntas = [
