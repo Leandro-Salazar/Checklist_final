@@ -33,14 +33,6 @@ app.post('/api/enviar-formulario', async (req, res) => {
       text_mkpn1nf1: respostas[14],
       text_mkpnc0wq: respostas[15],
       text_mkpnh13t: respostas[16],
-      text_mkpn5rsk: respostas[17],
-      text_mkpna61f: respostas[18],
-      text_mkpntay0: respostas[19],
-      text_mkpntemc: respostas[20],
-      text_mkpnfbbb: respostas[21],
-      text_mkpn3qcd: respostas[22],
-      text_mkpnqmth: respostas[23],
-      text_mkpncnc3: respostas[24],
     };
 
     const mutation = {

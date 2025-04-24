@@ -1,4 +1,3 @@
-// script.js
 import { perguntas, placeholders, curiosidades, imagensPerguntas } from './data.js';
 import { gerarPDF } from './geradorPDF.js';
 
@@ -6,6 +5,16 @@ let etapaAtual = 0;
 const totalEtapas = perguntas.length;
 const respostas = [];
 let arquivoFatura = null;
+let modoArbitragem = false;
+let modoPeakShaving = false;
+let modoBackup = false;
+let modoOutros = false;
+let redirecionouPeak = false;
+let redirecionouBackup = false;
+let redirecionouOutros = false;
+
+
+
 
 const startButton = document.getElementById('startButton');
 const loginBox = document.querySelector('.form-box.login');
@@ -29,10 +38,52 @@ function atualizarProgresso() {
   progressText.textContent = `${progresso}%`;
 }
 
+function devePularPergunta(index) {
+  if (index <= 2) return false; // Etapas fixas (nome, fatura, tipo)
+
+  // Lógica SIM/NÃO para todas as opções
+  if (index === 4 && respostas[3]?.toLowerCase() !== "sim") return true;
+  if ([6, 7, 8, 9].includes(index) && respostas[5]?.toLowerCase() !== "sim") return true;
+
+  // Regras por modo
+  if (modoArbitragem && (index < 3 || index > 11)) return true;
+
+  if (modoPeakShaving) {
+    if ([13, 14, 15, 16].includes(index)) return true; // Pula cargas críticas
+    if (index < 3 && index !== 12) return true; // Só permite 12 antes da lógica
+    if (modoPeakShaving && redirecionouPeak && index === 12) return true;
+  }
+
+  if (modoBackup) {
+    // Permite etapas 13 a 16 antes do redirecionamento
+    if (!redirecionouBackup) {
+      if (index < 13 || index > 16) return true;
+    } else {
+      // Após as perguntas iniciais, permite apenas 3 a 11
+      if (index < 3 || index > 11) return true;
+    }
+  }  
+
+  if (modoOutros) {
+    // Antes do redirecionamento, só mostra 12 a 16
+    if (!redirecionouOutros && (index < 12 || index > 16)) return true;
+  
+    // Depois do redirecionamento, mostra apenas 3 a 11 (com lógica sim/não)
+    if (redirecionouOutros) {
+      if (index === 12) return true; // 👈 EVITA repetição da pergunta 12
+      if (index < 3 || index > 11) return true;
+    }
+  }
+  
+
+  return false;
+}
+
 window.addEventListener('load', () => {
   checkScreenSize();
   atualizarProgresso();
 });
+
 window.addEventListener('resize', checkScreenSize);
 
 startButton.addEventListener('click', () => {
@@ -56,12 +107,41 @@ nextButton.addEventListener("click", async () => {
     const selectElement = document.getElementById("selectOpcoes");
     const selecionados = Array.from(selectElement.selectedOptions).map(option => option.value);
     respostas[etapaAtual] = selecionados.length > 0 ? selecionados.join(", ") : "Nenhuma opção selecionada";
-  }
-   else {
+
+    modoArbitragem = selecionados.includes("Arbitragem");
+    modoPeakShaving = selecionados.includes("Peak Shaving");
+    modoBackup = selecionados.includes("Backup");
+    modoOutros = selecionados.includes("Outros");
+
+    if (modoArbitragem) etapaAtual = 2;
+    if (modoPeakShaving) etapaAtual = 11;
+    if (modoBackup) etapaAtual = 12;
+    if (modoOutros) etapaAtual = 11;
+  } else {
     respostas[etapaAtual] = respostaInput.value.trim();
+
+  // Se a etapa atual for 12 e o modo for Peak Shaving, vamos manualmente para a 3
+  if (etapaAtual === 12 && modoPeakShaving && !redirecionouPeak) {
+    etapaAtual = 2; // para que a próxima seja a etapa 3
+    redirecionouPeak = true; // evita que isso aconteça de novo
+  }
+
+  if (etapaAtual === 16 && modoBackup && !redirecionouBackup) {
+    etapaAtual = 2; // para que a próxima seja a etapa 3
+    redirecionouBackup = true;
   }
   
-  etapaAtual++;
+  if (etapaAtual === 16 && modoOutros && !redirecionouOutros) {
+    etapaAtual = 2; // a próxima será 3
+    redirecionouOutros = true;
+  }
+  
+
+  }
+
+  do {
+    etapaAtual++;
+  } while (etapaAtual < totalEtapas && devePularPergunta(etapaAtual));
 
   if (etapaAtual < totalEtapas) {
     atualizarPergunta();
@@ -69,11 +149,15 @@ nextButton.addEventListener("click", async () => {
   } else {
     finalizarFormulario();
   }
+
   atualizarProgresso();
 });
 
 prevButton.addEventListener("click", () => {
-  if (etapaAtual > 0) etapaAtual--;
+  do {
+    etapaAtual--;
+  } while (etapaAtual > 2 && devePularPergunta(etapaAtual));
+
   atualizarPergunta();
   atualizarProgresso();
 });
@@ -99,11 +183,11 @@ function atualizarPergunta() {
   } else if (etapaAtual === 2) {
     inputBoxTexto.style.display = 'none';
     inputBoxArquivo.style.display = 'none';
-    inputBoxCheckBox.style.display = 'block'
-  } else{
+    inputBoxCheckBox.style.display = 'block';
+  } else {
     inputBoxTexto.style.display = 'block';
     inputBoxArquivo.style.display = 'none';
-    inputBoxCheckBox.style.display = 'none'
+    inputBoxCheckBox.style.display = 'none';
   }
 
   setTimeout(() => respostaInput.focus(), 50);
@@ -142,13 +226,13 @@ async function finalizarFormulario() {
         const formData = new FormData();
         formData.append("arquivo", arquivoFatura);
         formData.append("itemId", itemId);
-        formData.append("coluna", "file_mkq2g4mm")
+        formData.append("coluna", "file_mkq2g4mm");
 
         await fetch("http://localhost:3000/api/upload-pdf", {
           method: "POST",
           body: formData
         });
-      }
+      } 
 
       await gerarPDF(respostas, perguntas, itemId);
 
