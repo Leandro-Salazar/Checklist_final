@@ -36,18 +36,23 @@
         </div>
         
         <div id="inputBoxArquivo" style="display: none;">
-          <label for="uploadFatura" class="custom-upload-button"><i class="fa-solid fa-arrow-up-from-bracket"></i>Escolher Arquivo</label>
+          <label for="uploadFatura" class="custom-upload-button">
+            <i class="fa-solid fa-arrow-up-from-bracket"></i>Escolher Arquivo
+          </label>
+          
+          <div class="arquivoAdicionado" id="arquivoSelecionado" style="margin-top: 10px; font-size: 14px; color: #333;"></div>
+        
           <input type="file" id="uploadFatura" style="display: none;" />
-          <div id="arquivoSelecionado" style="margin-top: 10px; font-size: 14px; color: #333;"></div>
           <div id="uploadErro" style="color: red; margin-top: 8px; display: none;"></div>
         </div>
+        
         
         <div id="inputBoxCheckBox" style="display: none;">
           <select id="selectOpcoes" name="opcoes">
             <option value="">Selecione uma opção...</option>
             <option value="Peak Shaving">Peak Shaving</option>
             <option value="Backup">Backup</option>
-            <option value="Arbitragem">Arbitragem</option>
+            <option value="Arbitragem">Arbitragem/Load Shifting</option>
             <option value="Outros">Não sei, me ajude com isso</option>
           </select>
         </div>
@@ -55,6 +60,7 @@
         <div id="inputBoxRadio" style="display: none;">
           <label><input type="radio" name="respostaRadio" value="Sim"> Sim</label>
           <label><input type="radio" name="respostaRadio" value="Não"> Não</label>
+          <div id="opcaoErro" style="color: red; margin-top: 8px; display: none;"></div>
         </div>
         
         <!-- Botões -->

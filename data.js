@@ -11,24 +11,25 @@ export const imagensPerguntas = [
   ];
   
   export const placeholders = [
-    "Ex.: Carlos Alberto",
-    "",
-    "Ex.: Sim",
-    "Ex.: O maior excedente durante o dia é de 100KW por 2 horas.",
-    "Ex.: Em anexo segue o perfil diário de consumo da planta",
-    "Ex.: Sim",
-    "Ex.: 40% dos 735KW totais, isto é aproximadamente 294KW.",
-    "Ex.: 2 motores de 100CV (75KW) não apresentam inversores de frequência e partem diretamente na rede. Os demais são controlados por inversor de frequência.",
-    "Ex.: Segue anexo lista de cargas da planta",
-    "Ex.: Sim",
-    "Ex.: 20 ms",
-    "Ex.: Hoje temos 200KW em cargas críticas, isto é, 20% do total das cargas não podem parar.",
-    "Ex.: Dos 200KW de cargas críticas, 75% são cargas indutivas, isto é, 150KW",
-    "Ex.: Não",
-    "Ex.: Existe uma área de 200m2 para instalação de uma planta",
-    "Ex.: Modalidade A3 Verde com tarifa ponta e fora ponta.",
-    "Ex.: Aparentemente existe mas não sei em quanto estimar este excedente",
+    "Ex.: Carlos Alberto", 
+    "", 
+    "Ex.: Backup (suprir quedas), Peak Shaving (evitar picos de demanda), Arbitragem (economizar energia usando o BESS), Outros (não sei ao certo)", 
+    "Ex.: Sim", 
+    "Ex.: 0.6 MWp (fotovoltaico), com potência ativa média de 0.5 MW", 
+    "Ex.: Sim", 
+    "Ex.: Gerador de 500 kVA, com potência de 400 kW", 
+    "Ex.: R$ 5,45 por litro", 
+    "Ex.: O gerador diesel hoje é utilizado nos horários de ponta das 17h até às 20h", 
+    "Ex.: A rede elétrica cai cerca de 5 vezes ao ano com duração média de 1 hora", 
+    "Ex.: 380V trifásico", 
+    "Ex.: Área externa de 150 m² disponível ao lado do galpão principal", 
+    "Ex.: Consumo médio de 450 kW, pico de 620 kW (14h–16h).", 
+    "Ex.: Sim, como sistemas de refrigeração e fornos industriais", 
+    "Ex.: Até 30 milissegundos (ms)", 
+    "Ex.: 150 kW de um total de 600 kW (25%)",
+    "Ex.: 70% das cargas críticas são indutivas (motores, compressores etc.)",
   ];
+  
    
   export const curiosidades = [
     "Você sabia? A You.On é pioneira em armazenamento de energia no Brasil.",
@@ -66,6 +67,6 @@ export const imagensPerguntas = [
     "Existem cargas críticas na sua unidade que não podem parar de forma alguma ?",
     "Qual tempo máximo de comutação de On Grid para Off Grid aceitável em caso de uma queda de rede?",
     "Qual o percentual em kW dessas cargas críticas com relação à potencia total da unidade consumidora?",
-    "Do total de cargas críticas, qual o percentual de cargas indutivas (motores elétricos, compressores de ar condicionado, elevadores, transformadores, etc). ?"
+    "Do total de cargas críticas, qual o percentual de cargas indutivas (motores elétricos, compressores de ar condicionado, elevadores, transformadores, etc). ?",
   ];
   

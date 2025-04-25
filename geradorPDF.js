@@ -3,82 +3,61 @@ export async function gerarPDF(respostas, perguntas, itemId) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
-    // === CAPA ===
-    // Texto "WE KEEP YOU ON"
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(14);
-    doc.text("WE KEEP YOU ON", 105, 40, { align: "center" });
+    // === TÍTULO ===
+    const nomeCliente = respostas[0] || "Nome não informado";
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text(`Checklist Técnico - ${nomeCliente}`, 105, 20, { align: "center" });
 
-    // Linha horizontal
-    doc.setLineWidth(0.5);
-    doc.line(70, 43, 140, 43); // linha abaixo do texto
+    // Conteúdo das perguntas/respostas
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margemTopo = 45;
+    const margemInferior = 20;
+    const alturaLinha = 8;
+    let y = margemTopo;
 
-    // Logo da empresa
-    const logo = new Image();
-    logo.src = "./img/Logo Verde.png"; // substitua pelo caminho correto
+    respostas.forEach((resposta, index) => {
+      const pergunta = perguntas[index];
+      if (!pergunta) return;
 
-    logo.onload = () => {
-      doc.addImage(logo, "PNG", 75, 100, 60, 25); // centraliza o logo
+      const textoPergunta = `${index + 1}. ${pergunta}`;
+      const textoResposta = `${resposta}`;
 
-      // Título
-      doc.setFontSize(16);
+      const linhasPergunta = doc.splitTextToSize(textoPergunta, 180);
+      const linhasResposta = doc.splitTextToSize(textoResposta, 180);
+      const alturaBloco = (linhasPergunta.length + linhasResposta.length) * alturaLinha + 4;
+
+      if (y + alturaBloco > pageHeight - margemInferior) {
+        doc.addPage();
+        y = margemTopo;
+      }
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
       doc.setTextColor(0);
-      doc.text(
-        "CheckList Técnico",
-        105,
-        140,
-        { align: "center" }
-      );
+      doc.text(linhasPergunta, 10, y);
+      y += linhasPergunta.length * alturaLinha;
 
-      // Nova página para iniciar conteúdo
-      doc.addPage();
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(12);
+      doc.setTextColor(0);
+      doc.text(linhasResposta, 10, y);
+      y += linhasResposta.length * alturaLinha + 6;
+    });
 
-      const pageHeight = doc.internal.pageSize.getHeight();
-      const margemTopo = 20;
-      const margemInferior = 20;
-      const alturaLinha = 8;
-      let y = margemTopo;
+    // Gerar e enviar o PDF
+    const pdfBlob = doc.output("blob");
+    const formData = new FormData();
+    const nomeChecklist = nomeCliente.replace(/[^\w\s\-]/gi, '').replace(/\s+/g, '_') || 'checklist';
 
-      respostas.forEach((resposta, index) => {
-        const pergunta = perguntas[index];
-        if (!pergunta) return
-        const textoPergunta = `${index + 1}. ${pergunta}`;
-        const textoResposta =  `${resposta}`;
-
-        const linhasPergunta = doc.splitTextToSize(textoPergunta, 180);
-        const linhasResposta = doc.splitTextToSize(textoResposta, 180);
-        const alturaBloco = (linhasPergunta.length + linhasResposta.length) * alturaLinha + 4;
-
-        if (y + alturaBloco > pageHeight - margemInferior) {
-          doc.addPage();
-          y = margemTopo;
-        }
-
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(12);
-        doc.setTextColor(0);
-        doc.text(linhasPergunta, 10, y);
-        y += linhasPergunta.length * alturaLinha;
-
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(12);
-        doc.setTextColor(0);
-        doc.text(linhasResposta, 10, y);
-        y += linhasResposta.length * alturaLinha + 6;
-      });
-
-      // Geração do PDF
-      const pdfBlob = doc.output("blob");
-      const formData = new FormData();
-      formData.append("arquivo", pdfBlob, "checklist.pdf");
-      formData.append("itemId", itemId);
-
-      fetch("https://checklist-final.onrender.com/api/upload-pdf", {
-        method: "POST",
-        body: formData
-      })
-        .then(() => console.log("✅ PDF enviado com sucesso"))
-        .catch((error) => console.error("❌ Erro ao enviar o PDF:", error));
-    };
+    formData.append("arquivo", pdfBlob, `${nomeChecklist}.pdf`);
+    formData.append("itemId", itemId);
+    
+    fetch("https://checklist-final.onrender.com/api/upload-pdf", {
+      method: "POST",
+      body: formData
+    })
+      .then(() => console.log("✅ PDF enviado com sucesso"))
+      .catch((error) => console.error("❌ Erro ao enviar o PDF:", error));
   });
 }

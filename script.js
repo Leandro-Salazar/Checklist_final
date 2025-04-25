@@ -12,6 +12,8 @@ let modoOutros = false;
 let redirecionouPeak = false;
 let redirecionouBackup = false;
 let redirecionouOutros = false;
+let etapaAnterior = null;
+
 
 const startButton = document.getElementById('startButton');
 const loginBox = document.querySelector('.form-box.login');
@@ -24,6 +26,20 @@ const prevButton = document.getElementById("prevButton");
 const progressBar = document.querySelector('.progress-bar');
 const progressText = document.getElementById('progressText');
 const progressContainer = document.querySelector('.progress-container');
+const erroOpcao = document.getElementById("opcaoErro");
+const uploadInput = document.getElementById("uploadFatura");
+const arquivoSelecionado = document.getElementById("arquivoSelecionado");
+    
+    uploadInput.addEventListener("change", () => {
+      if (uploadInput.files.length > 0) {
+        const arquivo = uploadInput.files[0];
+        arquivoSelecionado.innerHTML = `
+          <strong>Seu arquivo:</strong> ${arquivo.name} (${(arquivo.size / 1024).toFixed(1)} KB)
+        `;
+      } else {
+        arquivoSelecionado.innerHTML = ""; 
+      }
+    });
 
 function checkScreenSize() {
   progressContainer.style.display = window.innerWidth > 768 ? 'block' : 'none';
@@ -36,38 +52,36 @@ function atualizarProgresso() {
 }
 
 function devePularPergunta(index) {
-  if (index <= 2) return false; // Etapas fixas (nome, fatura, tipo)
+  if (index <= 2) return false; 
 
-  // Lógica SIM/NÃO para todas as opções
+  
   if (index === 4 && respostas[3]?.toLowerCase() !== "sim") return true;
   if ([6, 7, 8, 9].includes(index) && respostas[5]?.toLowerCase() !== "sim") return true;
 
-  // Regras por modo
   if (modoArbitragem && (index < 3 || index > 11)) return true;
 
   if (modoPeakShaving) {
-    if ([13, 14, 15, 16].includes(index)) return true; // Pula cargas críticas
-    if (index < 3 && index !== 12) return true; // Só permite 12 antes da lógica
+    if ([13, 14, 15, 16].includes(index)) return true; 
+    if (index < 3 && index !== 12) return true; 
     if (modoPeakShaving && redirecionouPeak && index === 12) return true;
   }
 
   if (modoBackup) {
-    // Permite etapas 13 a 16 antes do redirecionamento
+    
     if (!redirecionouBackup) {
       if (index < 13 || index > 16) return true;
     } else {
-      // Após as perguntas iniciais, permite apenas 3 a 11
+     
       if (index < 3 || index > 11) return true;
     }
   }  
 
   if (modoOutros) {
-    // Antes do redirecionamento, só mostra 12 a 16
+  
     if (!redirecionouOutros && (index < 12 || index > 16)) return true;
   
-    // Depois do redirecionamento, mostra apenas 3 a 11 (com lógica sim/não)
     if (redirecionouOutros) {
-      if (index === 12) return true; // 👈 EVITA repetição da pergunta 12
+      if (index === 12) return true; 
       if (index < 3 || index > 11) return true;
     }
   }
@@ -95,22 +109,7 @@ nextButton.addEventListener("click", async () => {
   if (etapaAtual === 1) {
     const file = document.getElementById("uploadFatura").files[0];
     const erroUpload = document.getElementById("uploadErro");
-    const uploadInput = document.getElementById("uploadFatura");
-    const arquivoSelecionado = document.getElementById("arquivoSelecionado");
     
-    uploadInput.addEventListener("change", () => {
-      if (uploadInput.files.length > 0) {
-        const arquivo = uploadInput.files[0];
-        arquivoSelecionado.innerHTML = `
-          <strong>Arquivo selecionado:</strong> ${arquivo.name} (${(arquivo.size / 1024).toFixed(1)} KB)
-        `;
-      } else {
-        arquivoSelecionado.innerHTML = ""; // limpa se nenhum arquivo
-      }
-    });
-    
-
-
     if (!file) {
       erroUpload.style.display = 'block';
       erroUpload.textContent = "Por favor, selecione um arquivo.";
@@ -123,8 +122,21 @@ nextButton.addEventListener("click", async () => {
     respostas[etapaAtual] = "Fatura anexada";
   } else if (etapaAtual === 2) {
     const selectElement = document.getElementById("selectOpcoes");
-    const selecionados = Array.from(selectElement.selectedOptions).map(option => option.value);
-    respostas[etapaAtual] = selecionados.length > 0 ? selecionados.join(", ") : "Nenhuma opção selecionada";
+    const selecionados = Array.from(selectElement.selectedOptions)
+    .map(option => option.value)
+    .filter(value => value !== "");
+  
+  if (selecionados.length === 0) {
+    erroOpcao.style.display = 'block';
+    erroOpcao.textContent = "Por favor, selecione uma opção válida.";
+    return;
+  } else {
+    erroOpcao.style.display = 'none';
+  }
+  respostas[etapaAtual] = selecionados.join(", ");
+  
+
+    etapaAnterior = 2;
 
     modoArbitragem = selecionados.includes("Arbitragem");
     modoPeakShaving = selecionados.includes("Peak Shaving");
@@ -136,18 +148,20 @@ nextButton.addEventListener("click", async () => {
     if (modoBackup) etapaAtual = 12;
     if (modoOutros) etapaAtual = 11;
   } else if ([3, 5].includes(etapaAtual)) {
-    // Captura a resposta do radio
+    
     const selected = document.querySelector('input[name="respostaRadio"]:checked');
     if (!selected) {
-      alert("Por favor, selecione uma opção.");
+      erroOpcao.style.display = 'block';
+      erroOpcao.textContent = "Por favor, selecione uma opção antes de continuar.";
       return;
+    } else {
+      erroOpcao.style.display = 'none';
     }
     respostas[etapaAtual] = selected.value;
   } else {
     respostas[etapaAtual] = respostaInput.value.trim();
   }
 
-  // Se a etapa atual for 12 e o modo for Peak Shaving, vamos manualmente para a 3
   if (etapaAtual === 12 && modoPeakShaving && !redirecionouPeak) {
     etapaAtual = 2; 
     redirecionouPeak = true; 
@@ -159,14 +173,30 @@ nextButton.addEventListener("click", async () => {
   }
   
   if (etapaAtual === 16 && modoOutros && !redirecionouOutros) {
-    etapaAtual = 2; // a próxima será 3
+    etapaAtual = 2; 
     redirecionouOutros = true;
   
   }
 
-  do {
-    etapaAtual++;
-  } while (etapaAtual < totalEtapas && devePularPergunta(etapaAtual));
+  // no final do nextButton listener
+do {
+  etapaAtual++;
+} while (etapaAtual < totalEtapas && devePularPergunta(etapaAtual));
+
+// aqui o redirecionamento só acontece na transição após a etapa 2
+if (respostas[2] && etapaAtual === 3) {
+  if (modoPeakShaving && !redirecionouPeak) {
+    etapaAtual = 11;
+    redirecionouPeak = true;
+  } else if (modoBackup && !redirecionouBackup) {
+    etapaAtual = 12;
+    redirecionouBackup = true;
+  } else if (modoOutros && !redirecionouOutros) {
+    etapaAtual = 11;
+    redirecionouOutros = true;
+  }
+}
+
 
   if (etapaAtual < totalEtapas) {
     atualizarPergunta();
@@ -179,14 +209,32 @@ nextButton.addEventListener("click", async () => {
 });
 
 prevButton.addEventListener("click", () => {
-  do {
+  if ([11, 12, 13, 14, 15, 16].includes(etapaAtual) && etapaAnterior === 2) {
+    etapaAtual = 2;
+    etapaAnterior = null; // limpa para não bugar em voltas futuras
+  } else {
     etapaAtual--;
-  } while (etapaAtual > 2 && devePularPergunta(etapaAtual));
+  
+    while (etapaAtual > 2 && devePularPergunta(etapaAtual)) {
+      etapaAtual--;
+    }
+  }
+  
+  if (etapaAtual === 2) {
+    redirecionouPeak = false;
+    redirecionouBackup = false;
+    redirecionouOutros = false;
+    modoArbitragem = false;
+    modoPeakShaving = false;
+    modoBackup = false;
+    modoOutros = false;
+  }
+  
 
-  // 👉 Ao voltar, limpa seleção de radio se estiver visível
   if ([3, 5].includes(etapaAtual)) {
     const radios = document.querySelectorAll('input[name="respostaRadio"]');
     radios.forEach(r => r.checked = respostas[etapaAtual] === r.value);
+    erroOpcao.style.display = "none";
   }
 
   atualizarPergunta();
@@ -220,12 +268,13 @@ function atualizarPergunta() {
     inputBoxCheckBox.style.display = 'block';
     inputBoxRadio.style.display = 'none';
   } else if ([3, 5].includes(etapaAtual)) {
-    // Perguntas com SIM/NÃO (FV e Gerador)
     inputBoxTexto.style.display = 'none';
     inputBoxArquivo.style.display = 'none';
     inputBoxCheckBox.style.display = 'none';
     inputBoxRadio.style.display = 'block';
-    document.querySelectorAll('input[name="respostaRadio"]').forEach(el => el.checked = false);
+  
+    const radios = document.querySelectorAll('input[name="respostaRadio"]');
+    radios.forEach(el => el.checked = respostas[etapaAtual] === el.value);
   } else {
     inputBoxTexto.style.display = 'block';
     inputBoxArquivo.style.display = 'none';
@@ -252,7 +301,7 @@ function atualizarPergunta() {
 async function finalizarFormulario() {
   respostas[etapaAtual] = respostaInput.value.trim();
   const form = document.getElementById("formPerguntas");
-  form.innerHTML = `<div class="finalizacao"><h2>Enviando para nossa plataforma...</h2><p>Aguarde enquanto salvamos suas respostas.</p></div>`;
+  form.innerHTML = `<div class="finalizacao"><h2>Enviando CheckList, aguarde...</h2><p>Aguarde enquanto salvamos suas respostas.</p></div>`;
 
   try {
     const response = await fetch("https://checklist-final.onrender.com/api/enviar-formulario", {
@@ -286,4 +335,4 @@ async function finalizarFormulario() {
   } catch (err) {
     form.innerHTML = `<div class="finalizacao"><h2>Erro ao enviar</h2><p>${err.message}</p></div>`;
   }
-}
+}  
