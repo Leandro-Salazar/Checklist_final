@@ -1,118 +1,131 @@
 require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
 const fs = require('fs');
 const formidable = require('formidable');
 const FormData = require('form-data');
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
-const app = express();
-const PORT = 3000;
-
-app.use(cors());
-app.use(express.json());
-
-app.post('/api/enviar-formulario', async (req, res) => {
-  try {
-    const respostas = req.body.respostas;
-
-    const columnValues = {
-      text_mkpjsmpc: respostas[0],
-      text_mkq9ep39: respostas[2],
-      text_mkpnrmd0: respostas[3],
-      text_mkpn766e: respostas[4],
-      text_mkpnn53k: respostas[5],
-      text_mkpnxs2v: respostas[6],
-      text_mkpnza93: respostas[7],
-      text_mkpnzzsa: respostas[8],
-      text_mkpncg6g: respostas[9],
-      text_mkpnj2z2: respostas[10],
-      text_mkpn67sw: respostas[11],
-      text_mkpntpbk: respostas[12],
-      text_mkpndc5k: respostas[13],
-      text_mkpn1nf1: respostas[14],
-      text_mkpnc0wq: respostas[15],
-      text_mkpnh13t: respostas[16],
-    };
-
-    const mutation = {
-      query: `mutation {
-        create_item(
-          board_id: ${process.env.MONDAY_BOARD_ID},
-          item_name: "Checklist ${respostas[0]} - ${new Date().toLocaleDateString()}",
-          column_values: "${JSON.stringify(columnValues).replace(/"/g, '\\"')}"
-        ) {
-          id
-        }
-      }`
-    };
-
-    const response = await fetch("https://api.monday.com/v2", {
-      method: "POST",
-      headers: {
-        Authorization: process.env.MONDAY_API_TOKEN,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(mutation)
-    });
-
-    const result = await response.json();
-    if (result.errors) {
-      console.error("❌ Erros retornados:", result.errors);
-      return res.status(500).json({ error: "Erro ao enviar para o Monday", detalhe: result.errors });
-    }
-
-    res.status(200).json(result);
-  } catch (err) {
-    console.error("❌ Erro inesperado:", err);
-    res.status(500).json({ error: "Erro interno ao enviar formulário", detalhe: err.message });
-  }
-});
-
-app.post("/api/upload-pdf", (req, res) => {
-  const form = new formidable.IncomingForm({ keepExtensions: true });
-
-  form.parse(req, async (err, fields, files) => {
-    if (err) return res.status(500).send("Erro ao processar arquivo.");
-
-    const fileArray = files.arquivo;
-    const itemId = fields.itemId;
-    const coluna = fields.coluna || "file_mkpn46xc"; // se não enviado, vai para checklist PDF
-
-    if (!fileArray || !itemId) {
-      return res.status(400).json({ error: "Arquivo ou itemId ausente." });
-    }
-
-    const file = Array.isArray(fileArray) ? fileArray[0] : fileArray;
-    const filePath = file?.filepath || file?.path;
-
-    const formData = new FormData();
-    formData.append("query", `
-      mutation ($file: File!) {
-        add_file_to_column(file: $file, item_id: ${itemId}, column_id: "${coluna}") {
-          id
-        }
-      }`);
-    formData.append("variables[file]", fs.createReadStream(filePath));
-
+module.exports = async function (context, req) {
+  if (req.method === 'POST' && req.url.includes('/api/enviar-formulario')) {
     try {
-      const response = await fetch("https://api.monday.com/v2/file", {
+      const respostas = req.body.respostas;
+
+      const columnValues = {
+        text_mkpjsmpc: respostas[0],
+        text_mkq9ep39: respostas[2],
+        text_mkpnrmd0: respostas[3],
+        text_mkpn766e: respostas[4],
+        text_mkpnn53k: respostas[5],
+        text_mkpnxs2v: respostas[6],
+        text_mkpnza93: respostas[7],
+        text_mkpnzzsa: respostas[8],
+        text_mkpncg6g: respostas[9],
+        text_mkpnj2z2: respostas[10],
+        text_mkpn67sw: respostas[11],
+        text_mkpntpbk: respostas[12],
+        text_mkpndc5k: respostas[13],
+        text_mkpn1nf1: respostas[14],
+        text_mkpnc0wq: respostas[15],
+        text_mkpnh13t: respostas[16],
+      };
+
+      const mutation = {
+        query: `mutation {
+          create_item(
+            board_id: ${process.env.MONDAY_BOARD_ID},
+            item_name: "Checklist ${respostas[0]} - ${new Date().toLocaleDateString()}",
+            column_values: "${JSON.stringify(columnValues).replace(/"/g, '\\"')}"
+          ) {
+            id
+          }
+        }`
+      };
+
+      const response = await fetch("https://api.monday.com/v2", {
         method: "POST",
         headers: {
-          Authorization: process.env.MONDAY_API_TOKEN
+          Authorization: process.env.MONDAY_API_TOKEN,
+          "Content-Type": "application/json"
         },
-        body: formData
+        body: JSON.stringify(mutation)
       });
 
       const result = await response.json();
-      res.json(result);
-    } catch (error) {
-      console.error("Erro ao enviar para Monday:", error);
-      res.status(500).send("Erro ao enviar arquivo para Monday");
-    }
-  });
-});
+      if (result.errors) {
+        context.res = {
+          status: 500,
+          body: { error: "Erro ao enviar para o Monday", detalhe: result.errors }
+        };
+        return;
+      }
 
-app.listen(PORT, () => {
-  console.log(`✅ Servidor rodando em https://checklist-final.onrender.com`);
-});
+      context.res = {
+        status: 200,
+        body: result
+      };
+    } catch (err) {
+      context.res = {
+        status: 500,
+        body: { error: "Erro interno ao enviar formulário", detalhe: err.message }
+      };
+    }
+  } 
+  else if (req.method === 'POST' && req.url.includes('/api/upload-pdf')) {
+    const form = new formidable.IncomingForm({ keepExtensions: true });
+
+    await new Promise((resolve, reject) => {
+      form.parse(req, async (err, fields, files) => {
+        if (err) {
+          context.res = { status: 500, body: "Erro ao processar arquivo." };
+          reject();
+          return;
+        }
+
+        const fileArray = files.arquivo;
+        const itemId = fields.itemId;
+        const coluna = fields.coluna || "file_mkpn46xc";
+
+        if (!fileArray || !itemId) {
+          context.res = { status: 400, body: { error: "Arquivo ou itemId ausente." } };
+          reject();
+          return;
+        }
+
+        const file = Array.isArray(fileArray) ? fileArray[0] : fileArray;
+        const filePath = file?.filepath || file?.path;
+
+        const formData = new FormData();
+        formData.append("query", `
+          mutation ($file: File!) {
+            add_file_to_column(file: $file, item_id: ${itemId}, column_id: "${coluna}") {
+              id
+            }
+          }`);
+        formData.append("variables[file]", fs.createReadStream(filePath));
+
+        try {
+          const response = await fetch("https://api.monday.com/v2/file", {
+            method: "POST",
+            headers: {
+              Authorization: process.env.MONDAY_API_TOKEN
+            },
+            body: formData
+          });
+
+          const result = await response.json();
+          context.res = { status: 200, body: result };
+          resolve();
+        } catch (error) {
+          console.error("Erro ao enviar para Monday:", error);
+          context.res = { status: 500, body: "Erro ao enviar arquivo para Monday" };
+          reject();
+        }
+      });
+    });
+  } 
+  else {
+    context.res = {
+      status: 404,
+      body: "Rota não encontrada"
+    };
+  }
+}

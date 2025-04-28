@@ -298,17 +298,33 @@ function atualizarPergunta() {
   setTimeout(() => painelLateral.classList.remove('show-new-bg'), 1600);
 }
 
+// Defina aqui a URL base do seu Azure Function
+// Corrigido: URL do Azure Function
+const AZURE_FUNCTION_URL = "https://test-checklist.azurewebsites.net";
+
 async function finalizarFormulario() {
   respostas[etapaAtual] = respostaInput.value.trim();
+  
   const form = document.getElementById("formPerguntas");
-  form.innerHTML = `<div class="finalizacao"><h2>Enviando CheckList, aguarde...</h2><p>Aguarde enquanto salvamos suas respostas.</p></div>`;
+  
+  form.innerHTML = `
+    <div class="finalizacao">
+      <h2>Enviando CheckList, aguarde...</h2>
+      <p>Aguarde enquanto salvamos suas respostas.</p>
+    </div>
+  `;
 
   try {
-    const response = await fetch("https://checklist-final.onrender.com/api/enviar-formulario", {
+    // Envia as respostas para o backend Azure
+    const response = await fetch(`${AZURE_FUNCTION_URL}/enviar-formulario`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ respostas })
     });
+
+    if (!response.ok) {
+      throw new Error(`Erro HTTP ${response.status}`);
+    }
 
     const result = await response.json();
     const itemId = result.data?.create_item?.id;
@@ -320,19 +336,34 @@ async function finalizarFormulario() {
         formData.append("itemId", itemId);
         formData.append("coluna", "file_mkq2g4mm");
 
-        await fetch("https://checklist-final.onrender.com/api/upload-pdf", {
+        const uploadResponse = await fetch(`${AZURE_FUNCTION_URL}/upload-pdf`, {
           method: "POST",
           body: formData
         });
-      } 
+
+        if (!uploadResponse.ok) {
+          throw new Error(`Erro ao enviar arquivo: ${uploadResponse.status}`);
+        }
+      }
 
       await gerarPDF(respostas, perguntas, itemId);
 
-      form.innerHTML = `<div class="finalizacao"><h2>Checklist enviado!</h2><p>Seu formulário foi registrado em nossa plataforma.</p></div>`;
+      form.innerHTML = `
+        <div class="finalizacao">
+          <h2>Checklist enviado!</h2>
+          <p>Seu formulário foi registrado em nossa plataforma.</p>
+        </div>
+      `;
     } else {
-      throw new Error("Erro ao salvar item no Monday");
+      throw new Error("Erro ao salvar item no Monday.com");
     }
   } catch (err) {
-    form.innerHTML = `<div class="finalizacao"><h2>Erro ao enviar</h2><p>${err.message}</p></div>`;
+    console.error("Erro no envio:", err);
+    form.innerHTML = `
+      <div class="finalizacao">
+        <h2>Erro ao enviar</h2>
+        <p>${err.message}</p>
+      </div>
+    `;
   }
-}  
+}
