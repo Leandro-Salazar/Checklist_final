@@ -243,6 +243,23 @@ form{
   transition: all 0.3s ease;
 }
 
+#outroTextoContainer input {
+  width: 100%;
+  padding: 13px 50px 13px 20px;
+  background: #eee;
+  border-radius: 8px;
+  border: none;
+  outline: none;  
+  font-size: 16px;
+  color: #333;
+  font-weight: 500;
+}
+
+#outroTextoContainer input::placeholder {
+  color: #888;
+  font-weight: 400;
+}
+
 #selectOpcoes {
   
   width: 100%;
