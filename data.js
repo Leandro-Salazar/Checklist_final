@@ -52,7 +52,7 @@ export const imagensPerguntas = [
    
   export const perguntas = [
     "Digite seu nome: ",
-    "Faça o Upload da sua fatura",
+    "Faça o Upload da sua conta de energia",
     "Qual o tipo de solução?",
     "Possui um sistema fotovoltaico instalado na unidade?",
     "Qual a potência instalada (MWp e MW)?",

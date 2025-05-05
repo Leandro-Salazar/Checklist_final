@@ -29,6 +29,14 @@ const progressContainer = document.querySelector('.progress-container');
 const erroOpcao = document.getElementById("opcaoErro");
 const uploadInput = document.getElementById("uploadFatura");
 const arquivoSelecionado = document.getElementById("arquivoSelecionado");
+const outroTextoContainer = document.getElementById("outroTextoContainer");
+const outroTextoInput = document.getElementById("outroTexto");
+
+document.getElementById("selectOpcoes").addEventListener("change", () => {
+  const selecionados = Array.from(document.getElementById("selectOpcoes").selectedOptions).map(opt => opt.value);
+  outroTextoContainer.style.display = selecionados.includes("Outro") ? "block" : "none";
+});
+
     
     uploadInput.addEventListener("change", () => {
       if (uploadInput.files.length > 0) {
@@ -133,6 +141,19 @@ nextButton.addEventListener("click", async () => {
   } else {
     erroOpcao.style.display = 'none';
   }
+    // Se "Outro" estiver selecionado, o campo de texto deve estar preenchido
+    if (selecionados.includes("Outro")) {
+      const outroTexto = outroTextoInput.value.trim();
+      if (!outroTexto) {
+        erroOpcao.style.display = 'block';
+        erroOpcao.textContent = "Por favor, descreva sua opção personalizada.";
+        return;
+      }
+      const index = selecionados.indexOf("Outro");
+      if (index !== -1) {
+        selecionados.splice(index, 1, outroTexto);
+      }
+    }
   respostas[etapaAtual] = selecionados.join(", ");
   
 
@@ -141,7 +162,8 @@ nextButton.addEventListener("click", async () => {
     modoArbitragem = selecionados.includes("Arbitragem");
     modoPeakShaving = selecionados.includes("Peak Shaving");
     modoBackup = selecionados.includes("Backup");
-    modoOutros = selecionados.includes("Outros");
+    modoOutros = selecionados.includes("Outros") || selecionados.includes("Outro");
+
 
     if (modoArbitragem) etapaAtual = 2;
     if (modoPeakShaving) etapaAtual = 11;
