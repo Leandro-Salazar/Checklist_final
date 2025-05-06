@@ -13,7 +13,7 @@ export const imagensPerguntas = [
   export const placeholders = [
     "Ex.: Carlos Alberto", 
     "", 
-    "Ex.: Backup (suprir quedas), Peak Shaving (evitar picos de demanda), Arbitragem (economizar energia usando o BESS), Não sei, me ajude com isso", 
+    "Ex.: Backup, Peak Shaving, Arbitragem/Load Shifting, Não sei, me ajude com isso", 
     "", 
     "Ex.: 0.5 MWp, 0.4 MW", 
     "", 
@@ -65,7 +65,7 @@ export const imagensPerguntas = [
     "Alguma observação relevante quanto ao local de instalação, limites de espaço físico, área classificada, etc. ?",
     "Informar o perfil de carga da unidade. Caso a unidade esteja aderida na CCEE, enviar a medição no SCDE dos últimos 12 meses.",
     "Existem cargas críticas na sua unidade que não podem parar de forma alguma ?",
-    "Qual tempo máximo de comutação de On Grid para Off Grid aceitável em caso de uma queda de rede?",
+    "Qual tempo máximo de comutação de On-Grid para Off-Grid aceitável em caso de uma queda de rede?",
     "Qual o percentual em kW dessas cargas críticas com relação à potencia total da unidade consumidora?",
     "Do total de cargas críticas, qual o percentual de cargas indutivas (motores elétricos, compressores de ar condicionado, elevadores, transformadores, etc). ?",
   ];
