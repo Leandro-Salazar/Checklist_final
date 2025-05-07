@@ -13,6 +13,8 @@ let redirecionouPeak = false;
 let redirecionouBackup = false;
 let redirecionouOutros = false;
 let etapaAnterior = null;
+let arquivoSCDE = null;
+
 
 
 const startButton = document.getElementById('startButton');
@@ -23,9 +25,6 @@ const perguntaTexto = document.getElementById("perguntaTexto");
 const respostaInput = document.getElementById("respostaInput");
 const nextButton = document.getElementById("nextButton");
 const prevButton = document.getElementById("prevButton");
-const progressBar = document.querySelector('.progress-bar');
-const progressText = document.getElementById('progressText');
-const progressContainer = document.querySelector('.progress-container');
 const erroOpcao = document.getElementById("opcaoErro");
 const uploadInput = document.getElementById("uploadFatura");
 const arquivoSelecionado = document.getElementById("arquivoSelecionado");
@@ -38,33 +37,51 @@ document.getElementById("selectOpcoes").addEventListener("change", () => {
 });
 
     
-    uploadInput.addEventListener("change", () => {
-      if (uploadInput.files.length > 0) {
-        const arquivo = uploadInput.files[0];
-        arquivoSelecionado.innerHTML = `
-          <strong>Seu arquivo:</strong> ${arquivo.name} (${(arquivo.size / 1024).toFixed(1)} KB)
-        `;
+uploadInput.addEventListener("change", () => {
+  const erroUpload = document.getElementById("uploadErro");
+
+  if (uploadInput.files.length > 0) {
+    const arquivo = uploadInput.files[0];
+    arquivoSelecionado.innerHTML = `
+      <strong>Seu arquivo:</strong> ${arquivo.name} (${(arquivo.size / 1024).toFixed(1)} KB)
+    `;
+    erroUpload.style.display = "none"; // Esconde o erro ao selecionar arquivo
+  } else {
+    arquivoSelecionado.innerHTML = "";
+  }
+});
+
+
+    document.getElementById("uploadSCDE").addEventListener("change", () => {
+      const file = document.getElementById("uploadSCDE").files[0];
+      const scdeSelecionado = document.getElementById("scdeSelecionado");
+    
+      if (file) {
+        scdeSelecionado.innerHTML = `<strong>Arquivo:</strong> ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+        arquivoSCDE = file;
       } else {
-        arquivoSelecionado.innerHTML = ""; 
+        scdeSelecionado.innerHTML = "";
+        arquivoSCDE = null;
       }
     });
+    
 
-function checkScreenSize() {
-  progressContainer.style.display = window.innerWidth > 768 ? 'block' : 'none';
-}
-
-function atualizarProgresso() {
-  const progresso = Math.round((etapaAtual / totalEtapas) * 100);
-  progressBar.style.width = `${progresso}%`;
-  progressText.textContent = `${progresso}%`;
-}
-
+    function atualizarProgresso() {
+      const progressoTexto = document.getElementById('progressText');
+      if (progressoTexto) {
+        progressoTexto.textContent = `Etapa ${etapaAtual + 1} de ${totalEtapas}`;
+      }
+    }
+    
 function devePularPergunta(index) {
   if (index <= 2) return false; 
 
   
   if (index === 4 && respostas[3]?.toLowerCase() !== "sim") return true;
-  if ([6, 7, 8, 9].includes(index) && respostas[5]?.toLowerCase() !== "sim") return true;
+  if ([6, 7, 8, 9].includes(index) && respostas[5]?.toLowerCase() !== "sim" && !(modoOutros && redirecionouOutros)) {
+    return true;
+  }
+  
 
   if (modoArbitragem && (index < 3 || index > 11)) return true;
 
@@ -85,63 +102,68 @@ function devePularPergunta(index) {
   }  
 
   if (modoOutros) {
-  
-    if (!redirecionouOutros && (index < 12 || index > 16)) return true;
-  
     if (redirecionouOutros) {
-      if (index === 12) return true; 
-      if (index < 3 || index > 11) return true;
+      // Após redirecionamento, mostrar apenas da 2 até 11
+      if (index < 2 || index > 11) return true;
+    } else {
+      // Antes do redirecionamento, mostrar apenas de 12 a 16
+      if (index < 12 || index > 16) return true;
     }
   }
+  
   
 
   return false;
 }
 
 window.addEventListener('load', () => {
-  checkScreenSize();
   atualizarProgresso();
 });
-
-window.addEventListener('resize', checkScreenSize);
 
 startButton.addEventListener('click', () => {
   loginBox.style.display = 'none';
   questionBox.style.display = 'flex';
   atualizarPergunta();
   prevButton.style.display = 'none';
-  checkScreenSize();
+
 });
 
 nextButton.addEventListener("click", async () => {
   if (etapaAtual === 1) {
     const file = document.getElementById("uploadFatura").files[0];
     const erroUpload = document.getElementById("uploadErro");
-    
-    if (!file) {
+    const semFatura = document.getElementById("semFaturaCheckbox").checked;
+
+    if (!file && !semFatura) {
       erroUpload.style.display = 'block';
       erroUpload.textContent = "Por favor, selecione um arquivo.";
       return;
     } else {
       erroUpload.style.display = 'none';
     }
-    
-    arquivoFatura = file;
-    respostas[etapaAtual] = "Fatura anexada";
+
+    if (semFatura) {
+      respostas[etapaAtual] = "Cliente não possui fatura no momento";
+      arquivoFatura = null;
+    } else {
+      respostas[etapaAtual] = "Fatura anexada";
+      arquivoFatura = file;
+    }
+
   } else if (etapaAtual === 2) {
     const selectElement = document.getElementById("selectOpcoes");
     const selecionados = Array.from(selectElement.selectedOptions)
-    .map(option => option.value)
-    .filter(value => value !== "");
-  
-  if (selecionados.length === 0) {
-    erroOpcao.style.display = 'block';
-    erroOpcao.textContent = "Por favor, selecione uma opção válida.";
-    return;
-  } else {
-    erroOpcao.style.display = 'none';
-  }
-    // Se "Outro" estiver selecionado, o campo de texto deve estar preenchido
+      .map(option => option.value)
+      .filter(value => value !== "");
+
+    if (selecionados.length === 0) {
+      erroOpcao.style.display = 'block';
+      erroOpcao.textContent = "Por favor, selecione uma opção válida.";
+      return;
+    } else {
+      erroOpcao.style.display = 'none';
+    }
+
     if (selecionados.includes("Outro")) {
       const outroTexto = outroTextoInput.value.trim();
       if (!outroTexto) {
@@ -154,23 +176,21 @@ nextButton.addEventListener("click", async () => {
         selecionados.splice(index, 1, outroTexto);
       }
     }
-  respostas[etapaAtual] = selecionados.join(", ");
-  
 
+    respostas[etapaAtual] = selecionados.join(", ");
     etapaAnterior = 2;
 
-    modoArbitragem = selecionados.includes("Arbitragem");
+    modoArbitragem = selecionados.includes("Arbitragem/Load Shifting");
     modoPeakShaving = selecionados.includes("Peak Shaving");
     modoBackup = selecionados.includes("Backup");
-    modoOutros = selecionados.includes("Outros") || selecionados.includes("Outro");
-
+    modoOutros = selecionados.includes("Não sei, me ajude com isso") || selecionados.includes("Outro");
 
     if (modoArbitragem) etapaAtual = 2;
     if (modoPeakShaving) etapaAtual = 11;
     if (modoBackup) etapaAtual = 12;
     if (modoOutros) etapaAtual = 11;
+
   } else if ([3, 5].includes(etapaAtual)) {
-    
     const selected = document.querySelector('input[name="respostaRadio"]:checked');
     if (!selected) {
       erroOpcao.style.display = 'block';
@@ -180,45 +200,56 @@ nextButton.addEventListener("click", async () => {
       erroOpcao.style.display = 'none';
     }
     respostas[etapaAtual] = selected.value;
+
+  } else if (etapaAtual === 12) {
+    const scdeCheckbox = document.getElementById("scdeCheckbox");
+    const scdeUpload = document.getElementById("uploadSCDE");
+    const erroSCDE = document.getElementById("erroSCDE");
+
+    if (scdeCheckbox.checked && scdeUpload.files.length === 0) {
+      erroSCDE.style.display = "block";
+      erroSCDE.textContent = "Por favor, anexe o arquivo SCDE.";
+      return;
+    } else {
+      erroSCDE.style.display = "none";
+    }
+
+    respostas[etapaAtual] = respostaInput.value.trim();
+
   } else {
     respostas[etapaAtual] = respostaInput.value.trim();
   }
 
+  // Redirecionamento após solução específica
   if (etapaAtual === 12 && modoPeakShaving && !redirecionouPeak) {
-    etapaAtual = 2; 
-    redirecionouPeak = true; 
-  }
-
-  if (etapaAtual === 16 && modoBackup && !redirecionouBackup) {
-    etapaAtual = 2; 
-    redirecionouBackup = true;
-  }
-  
-  if (etapaAtual === 16 && modoOutros && !redirecionouOutros) {
-    etapaAtual = 2; 
-    redirecionouOutros = true;
-  
-  }
-
-  // no final do nextButton listener
-do {
-  etapaAtual++;
-} while (etapaAtual < totalEtapas && devePularPergunta(etapaAtual));
-
-// aqui o redirecionamento só acontece na transição após a etapa 2
-if (respostas[2] && etapaAtual === 3) {
-  if (modoPeakShaving && !redirecionouPeak) {
-    etapaAtual = 11;
+    etapaAtual = 2;
     redirecionouPeak = true;
-  } else if (modoBackup && !redirecionouBackup) {
-    etapaAtual = 12;
+  }
+  if (etapaAtual === 16 && modoBackup && !redirecionouBackup) {
+    etapaAtual = 2;
     redirecionouBackup = true;
-  } else if (modoOutros && !redirecionouOutros) {
-    etapaAtual = 11;
+  }
+  if (etapaAtual === 16 && modoOutros && !redirecionouOutros) {
+    etapaAtual = 2;
     redirecionouOutros = true;
   }
-}
 
+  do {
+    etapaAtual++;
+  } while (etapaAtual < totalEtapas && devePularPergunta(etapaAtual));
+
+  if (respostas[2] && etapaAtual === 3) {
+    if (modoPeakShaving && !redirecionouPeak) {
+      etapaAtual = 11;
+      redirecionouPeak = true;
+    } else if (modoBackup && !redirecionouBackup) {
+      etapaAtual = 12;
+      redirecionouBackup = true;
+    } else if (modoOutros && !redirecionouOutros) {
+      etapaAtual = 11;
+      redirecionouOutros = true;
+    }
+  }
 
   if (etapaAtual < totalEtapas) {
     atualizarPergunta();
@@ -229,6 +260,7 @@ if (respostas[2] && etapaAtual === 3) {
 
   atualizarProgresso();
 });
+
 
 prevButton.addEventListener("click", () => {
   if ([11, 12, 13, 14, 15, 16].includes(etapaAtual) && etapaAnterior === 2) {
@@ -278,6 +310,9 @@ function atualizarPergunta() {
   const inputBoxArquivo = document.getElementById("inputBoxArquivo");
   const inputBoxCheckBox = document.getElementById("inputBoxCheckBox");
   const inputBoxRadio = document.getElementById("inputBoxRadio");
+  const scdeContainer = document.getElementById("scdeExtraContainer");
+  const scdeCheckbox = document.getElementById("scdeCheckbox");
+  const scdeUploadArea = document.getElementById("scdeUploadArea");
 
   if (etapaAtual === 1) {
     inputBoxTexto.style.display = 'none';
@@ -318,6 +353,19 @@ function atualizarPergunta() {
   painelLateral.classList.add('show-new-bg');
   setTimeout(() => painelLateral.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('${novaImagem}')`, 800);
   setTimeout(() => painelLateral.classList.remove('show-new-bg'), 1600);
+
+  if (etapaAtual === 12) {
+    
+    scdeContainer.style.display = "block";
+  } else {
+    scdeContainer.style.display = "none";
+    scdeUploadArea.style.display = "none";
+    scdeCheckbox.checked = false;
+  }
+  
+  scdeCheckbox?.addEventListener("change", () => {
+    scdeUploadArea.style.display = scdeCheckbox.checked ? "block" : "none";
+  });
 }
 
 async function finalizarFormulario() {
@@ -347,7 +395,22 @@ async function finalizarFormulario() {
           body: formData
         });
       } 
-
+      if (arquivoSCDE) {
+        respostas.push("Arquivo SCDE anexado");
+      
+        const formDataSCDE = new FormData();
+        formDataSCDE.append("arquivo", arquivoSCDE);
+        formDataSCDE.append("itemId", itemId);
+        formDataSCDE.append("coluna", "file_mkqq7eha"); // substitua pelo ID correto, se necessário
+      
+        await fetch("https://checklist-final.onrender.com/api/upload-pdf", {
+          method: "POST",
+          body: formDataSCDE
+        });
+      
+      } else {
+        respostas.push("Arquivo SCDE não anexado");
+      }
       await gerarPDF(respostas, perguntas, itemId);
 
       form.innerHTML = `<div class="finalizacao"><h2>Checklist enviado!</h2><p>Seu formulário foi registrado em nossa plataforma.</p></div>`;

@@ -1,0 +1,26 @@
+A fazer:
+
+
+quando o cliente não responder uma pergunta aparecer no pdf pergunta não respondida
+
+quando o cliente selecionar uma opção ex arbitragem tem as propias perguntas, so que não a aparece algumas perguntas de peak shaving então no pdf vai ficar "não é necessário resposta"
+
+opção outros onde o cliente seleciona a opção personalizada idicando qual solução ele quer respondendo todas as perguntas 
+
+adicionar o checkbox para se o cliente for off-grid não anexar a fatura 
+
+adicionar checkbox para se o cliente tem o ccee
+se tiver anexar o arquivo
+
+ajustar a solução no pdf quando selecionar não sei me ajude com isso aparecer no pdf
+
+quando o cliente pular sem responder a pergunta e aaprece o texto por favor anexe o arquivo quando ele clicar para adicionar desaparecer
+
+ajustar a logica de voltar para quando o cliente clicar em anterior voltar para pergunta anterior e não voltar para selecionar uma solução 
+
+quando o cliente clicar me outros e escrever a resposta aparecer a resposta dele no pdf e não outros
+
+adicionar ao fluxograma as etapas do financeiro 
+
+
+Adiconar ao monday a oportunidade club med com os 4 cenários

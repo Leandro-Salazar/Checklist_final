@@ -9,20 +9,28 @@ export async function gerarPDF(respostas, perguntas, itemId) {
     doc.setFontSize(18);
     doc.text(`Checklist Técnico - ${nomeCliente}`, 105, 20, { align: "center" });
 
-    // Conteúdo das perguntas/respostas
+    // === PERGUNTAS E RESPOSTAS ===
     const pageHeight = doc.internal.pageSize.getHeight();
     const margemTopo = 45;
     const margemInferior = 20;
     const alturaLinha = 8;
     let y = margemTopo;
 
-    respostas.forEach((resposta, index) => {
-      const pergunta = perguntas[index];
+    perguntas.forEach((pergunta, index) => {
       if (!pergunta) return;
 
-      const textoPergunta = `${index + 1}. ${pergunta}`;
-      const textoResposta = `${resposta}`;
+      let resposta = respostas[index];
+      let textoResposta;
 
+      if (resposta === undefined) {
+        textoResposta = "Pergunta não necessária para essa solução";
+      } else if (resposta.trim() === "") {
+        textoResposta = "Pergunta não respondida";
+      } else {
+        textoResposta = resposta;
+      }
+
+      const textoPergunta = `${index + 1}. ${pergunta}`;
       const linhasPergunta = doc.splitTextToSize(textoPergunta, 180);
       const linhasResposta = doc.splitTextToSize(textoResposta, 180);
       const alturaBloco = (linhasPergunta.length + linhasResposta.length) * alturaLinha + 4;
@@ -45,14 +53,41 @@ export async function gerarPDF(respostas, perguntas, itemId) {
       y += linhasResposta.length * alturaLinha + 6;
     });
 
-    // Gerar e enviar o PDF
+    // === INFORMAÇÃO EXTRA: SCDE ANEXADO OU NÃO ===
+    const statusSCDE = respostas[respostas.length - 1]; // última entrada adicionada no finalizarFormulario
+
+    if (statusSCDE && statusSCDE.includes("SCDE")) {
+      const textoPerguntaSCDE = "12b. Arquivo SCDE foi anexado?";
+      const textoRespostaSCDE = statusSCDE;
+
+      const linhasPerguntaSCDE = doc.splitTextToSize(textoPerguntaSCDE, 180);
+      const linhasRespostaSCDE = doc.splitTextToSize(textoRespostaSCDE, 180);
+      const alturaBlocoSCDE = (linhasPerguntaSCDE.length + linhasRespostaSCDE.length) * alturaLinha + 4;
+
+      if (y + alturaBlocoSCDE > pageHeight - margemInferior) {
+        doc.addPage();
+        y = margemTopo;
+      }
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.text(linhasPerguntaSCDE, 10, y);
+      y += linhasPerguntaSCDE.length * alturaLinha;
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(12);
+      doc.text(linhasRespostaSCDE, 10, y);
+      y += linhasRespostaSCDE.length * alturaLinha + 6;
+    }
+
+    // === GERAR PDF E ENVIAR ===
     const pdfBlob = doc.output("blob");
     const formData = new FormData();
     const nomeChecklist = nomeCliente.replace(/[^\w\s\-]/gi, '').replace(/\s+/g, '_') || 'checklist';
 
     formData.append("arquivo", pdfBlob, `${nomeChecklist}.pdf`);
     formData.append("itemId", itemId);
-    
+
     fetch("https://checklist-final.onrender.com/api/upload-pdf", {
       method: "POST",
       body: formData

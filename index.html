@@ -34,8 +34,30 @@
         <div class="input-box" id="inputBoxTexto">
           <input type="text" class="input-projeto" id="respostaInput" placeholder="Digite aqui" />
         </div>
+
+        <div id="scdeExtraContainer" style="display: none; margin-top: 10px;">
+          <label>
+            <input type="checkbox" id="scdeCheckbox" />
+            A unidade está aderida à CCEE e possui medição SCDE
+          </label>
+        
+          <div id="scdeUploadArea" style="display: none; margin-top: 10px;">
+            <label for="uploadSCDE" class="custom-upload-button">
+              <i class="fa-solid fa-arrow-up-from-bracket"></i> Anexar Medição SCDE
+            </label>
+            <input type="file" id="uploadSCDE" style="display: none;" />
+            <div id="scdeSelecionado" style="margin-top: 8px; font-size: 14px;"></div>
+            <div id="erroSCDE" style="color: red; margin-top: 5px; display: none;"></div>
+          </div>
+        </div>        
         
         <div id="inputBoxArquivo" style="display: none;">
+          <div style="margin-top: 10px;">
+            <label>
+              <input type="checkbox" id="semFaturaCheckbox" />
+              Não estou conectado a rede de distribuição (off-grid)
+            </label>
+          </div>          
           <label for="uploadFatura" class="custom-upload-button">
             <i class="fa-solid fa-arrow-up-from-bracket"></i>Escolher Arquivo
           </label>
@@ -52,8 +74,8 @@
             <option value="">Selecione uma opção...</option>
             <option value="Peak Shaving">Peak Shaving</option>
             <option value="Backup">Backup</option>
-            <option value="Arbitragem">Arbitragem/Load Shifting</option>
-            <option value="Outros">Não sei, me ajude com isso</option>
+            <option value="Arbitragem/Load Shifting">Arbitragem/Load Shifting</option>
+            <option value="Não sei, me ajude com isso">Não sei, me ajude com isso</option>
             <option value="Outro">Outro (Descreva abaixo)</option>
           </select>
 
@@ -75,7 +97,7 @@
           <button type="submit" class="btn" id="nextButton">Próxima</button>
         </div>
       </form>
-    </div>
+    </div>      
 
     <!-- Texto lateral -->
     <div class="toggle-box">
