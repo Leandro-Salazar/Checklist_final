@@ -14,6 +14,7 @@ let redirecionouBackup = false;
 let redirecionouOutros = false;
 let etapaAnterior = null;
 let arquivoSCDE = null;
+const historicoEtapas = [];
 
 
 
@@ -36,18 +37,27 @@ document.getElementById("selectOpcoes").addEventListener("change", () => {
   outroTextoContainer.style.display = selecionados.includes("Outro") ? "block" : "none";
 });
 
-    
 uploadInput.addEventListener("change", () => {
   const erroUpload = document.getElementById("uploadErro");
+  const semFatura = document.getElementById("semFaturaCheckbox").checked;
 
-  if (uploadInput.files.length > 0) {
-    const arquivo = uploadInput.files[0];
-    arquivoSelecionado.innerHTML = `
-      <strong>Seu arquivo:</strong> ${arquivo.name} (${(arquivo.size / 1024).toFixed(1)} KB)
-    `;
-    erroUpload.style.display = "none"; // Esconde o erro ao selecionar arquivo
+  if (uploadInput.files.length > 0 || semFatura) {
+    if (uploadInput.files.length > 0) {
+      const arquivo = uploadInput.files[0];
+      arquivoSelecionado.innerHTML = `
+        <strong>Seu arquivo:</strong> ${arquivo.name} (${(arquivo.size / 1024).toFixed(1)} KB)
+      `;
+    }
+    erroUpload.style.display = "none";
   } else {
     arquivoSelecionado.innerHTML = "";
+  }
+});
+
+document.getElementById("semFaturaCheckbox").addEventListener("change", () => {
+  const erroUpload = document.getElementById("uploadErro");
+  if (document.getElementById("semFaturaCheckbox").checked) {
+    erroUpload.style.display = "none";
   }
 });
 
@@ -233,7 +243,8 @@ nextButton.addEventListener("click", async () => {
     etapaAtual = 2;
     redirecionouOutros = true;
   }
-
+  
+  historicoEtapas.push(etapaAtual);
   do {
     etapaAtual++;
   } while (etapaAtual < totalEtapas && devePularPergunta(etapaAtual));
@@ -263,17 +274,13 @@ nextButton.addEventListener("click", async () => {
 
 
 prevButton.addEventListener("click", () => {
-  if ([11, 12, 13, 14, 15, 16].includes(etapaAtual) && etapaAnterior === 2) {
-    etapaAtual = 2;
-    etapaAnterior = null; // limpa para não bugar em voltas futuras
+  if (historicoEtapas.length > 0) {
+    etapaAtual = historicoEtapas.pop();
   } else {
-    etapaAtual--;
-  
-    while (etapaAtual > 2 && devePularPergunta(etapaAtual)) {
-      etapaAtual--;
-    }
+    etapaAtual = Math.max(0, etapaAtual - 1);
   }
-  
+
+  // Se voltamos para a etapa 2, resetar modos
   if (etapaAtual === 2) {
     redirecionouPeak = false;
     redirecionouBackup = false;
@@ -283,8 +290,8 @@ prevButton.addEventListener("click", () => {
     modoBackup = false;
     modoOutros = false;
   }
-  
 
+  // Restaurar seleções de radio, se necessário
   if ([3, 5].includes(etapaAtual)) {
     const radios = document.querySelectorAll('input[name="respostaRadio"]');
     radios.forEach(r => r.checked = respostas[etapaAtual] === r.value);
@@ -294,6 +301,7 @@ prevButton.addEventListener("click", () => {
   atualizarPergunta();
   atualizarProgresso();
 });
+
 
 
 function atualizarPergunta() {
